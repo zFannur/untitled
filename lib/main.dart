@@ -1,127 +1,103 @@
-import 'package:flutter/material.dart';
+import 'dart:convert' as convert;
 
-import 'api.dart';
+import 'package:flutter/material.dart';
 import 'form.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+   List<FormTable> forms = [];
+
+  static Future<List<FormTable>> getForm() async {
+
+    const uri = "https://script.google.com/macros/s/AKfycbxNlbz56_uJozTrBB0yju6Bdfjm4UUNPPcF7-Y-yz0enlXL2h9jzdhkOqVu-UT5Y5ovUg/exec";
+
+    return await http.get(Uri.parse(uri)).then((responce) {
+      var jsonForm = convert.jsonDecode(responce.body) as List;
+      return jsonForm.map((json) => FormTable.fromJson(json)).toList();
+    });
+  }
+
+   void postForm(FormTable form) async {
+
+     const uri = "https://script.google.com/macros/s/AKfycbxNlbz56_uJozTrBB0yju6Bdfjm4UUNPPcF7-Y-yz0enlXL2h9jzdhkOqVu-UT5Y5ovUg/exec";
+     try {
+      final url = Uri.parse(uri);
+
+      await http.post(url, body: form.toJson()).then((response) async {
+        if (response.statusCode == 302) {
+          var url = response.headers['location'];
+          await http.get(url as Uri).then((response) {
+            //print(convert.jsonDecode(response.body)['status']);
+          });
+        } else {
+          //print(convert.jsonDecode(response.body)['status']);
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+   }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final post = FormController();
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
+      home: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
               ElevatedButton(
-                onPressed: () {
-                  post.submitForm(
-                        (String response) {
-                          print("Response: $response");
-                          if (response == FormController.STATUS_SUCCESS) {
-                            // Feedback is saved succesfully in Google Sheets.
-                            print("Feedback Submitted");
-                          } else {
-                            // Error Occurred while saving data in Google Sheets.
-                            print("Error Occurred!");
-                          }
-                        });
-                }, child: Text('post'),
+                onPressed: () async {
+                  forms = await getForm();
+                  setState((){});
+
+                },
+                child: Text("get"),
               ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ListForm()));
-              }, child: Text('get'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: () async {
+                  final form = FormTable(name: 'name', email: 'email');
+                  postForm(form);
+                  setState((){});
+
+                },
+                child: Text("post"),
+              ),
+              if (forms.isEmpty)
+                CircularProgressIndicator()
+              else
+                Container(
+                  width: 400,
+                  height: 400,
+                    child: builForm(forms)),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-
-class ListForm extends StatefulWidget {
-  const ListForm({Key? key}) : super(key: key);
-
-  @override
-  State<ListForm> createState() => _ListFormState();
-}
-
-class _ListFormState extends State<ListForm> {
-  List<FeedbackForm> feedbackItems = [];
-
-  // Method to Submit Feedback and save it in Google Sheets
-
-  @override
-  void initState() {
-    super.initState();
-
-    FormController().getFeedbackList().then((feedbackItems) {
-      setState(() {
-        this.feedbackItems = feedbackItems;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: ListView.builder(
-          itemCount: feedbackItems.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Row(
-                children: <Widget>[
-                  Icon(Icons.person),
-                  Expanded(
-                    child: Text(
-                        "${feedbackItems[index].name} (${feedbackItems[index].email})"),
-                  )
-                ],
-              ),
-              subtitle: Row(
-                children: <Widget>[
-                  Icon(Icons.message),
-                  Expanded(
-                    child: Text(feedbackItems[index].feedback),
-                  )
-                ],
-              ),
-            );
-          },
-      ),
-    );
-  }
-}
-
+Widget builForm(List<FormTable> forms) => ListView.builder(
+  itemCount: forms.length,
+    itemBuilder: (context, index) {
+  final form = forms[index];
+  return Card(
+    child: ListTile(
+      title: Text(form.name),
+      subtitle: Text(form.email),
+    ),
+  );
+});
