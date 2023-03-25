@@ -35,6 +35,8 @@ class _MyAppState extends State<MyApp> {
       final url = Uri.parse(uri);
 
       await http.post(url, body: form.toJson()).then((response) async {
+        print(form.toJson());
+        print(response.statusCode);
         if (response.statusCode == 302) {
           var url = response.headers['location'];
           await http.get(url as Uri).then((response) {
@@ -51,39 +53,43 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final textController = TextEditingController();
+
     return MaterialApp(
-      home: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  forms = await getForm();
-                  setState((){});
+      home: Scaffold(
+        appBar: AppBar(),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextField(
+              controller: textController,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                forms = await getForm();
+                setState((){});
 
-                },
-                child: Text("get"),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final form = FormTable(name: 'name', email: 'email');
-                  postForm(form);
-                  setState((){});
+              },
+              child: Text("get"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final form = FormTable(action: 'del' ,id: int.parse(textController.text), name: 'name', email: 'email');
+                postForm(form);
+                forms = await getForm();
+                setState((){});
 
-                },
-                child: Text("post"),
-              ),
-              if (forms.isEmpty)
-                CircularProgressIndicator()
-              else
-                Container(
-                  width: 400,
-                  height: 400,
-                    child: builForm(forms)),
-            ],
-          ),
+              },
+              child: Text("post"),
+            ),
+            if (forms.isEmpty)
+              CircularProgressIndicator()
+            else
+              Container(
+                width: 400,
+                height: 400,
+                  child: builForm(forms)),
+          ],
         ),
       ),
     );
@@ -96,6 +102,7 @@ Widget builForm(List<FormTable> forms) => ListView.builder(
   final form = forms[index];
   return Card(
     child: ListTile(
+      leading: Text(form.id.toString()),
       title: Text(form.name),
       subtitle: Text(form.email),
     ),
