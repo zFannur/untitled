@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
 
   static Future<List<FormTable>> getForm() async {
     const uri =
-        "https://script.google.com/macros/s/AKfycbxNlbz56_uJozTrBB0yju6Bdfjm4UUNPPcF7-Y-yz0enlXL2h9jzdhkOqVu-UT5Y5ovUg/exec";
+        "https://script.google.com/macros/s/AKfycbySJsChZ2hhhjSqc5V_MPdic2rSMzhBIqs1MFSHsOi_Gpxl5UKR_t-pIPHlZHSF1EQrhg/exec";
 
     return await http.get(Uri.parse(uri)).then((response) {
       var jsonForm = convert.jsonDecode(response.body) as List;
@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> postForm(FormTable form) async {
     const uri =
-        "https://script.google.com/macros/s/AKfycbxNlbz56_uJozTrBB0yju6Bdfjm4UUNPPcF7-Y-yz0enlXL2h9jzdhkOqVu-UT5Y5ovUg/exec";
+        "https://script.google.com/macros/s/AKfycbySJsChZ2hhhjSqc5V_MPdic2rSMzhBIqs1MFSHsOi_Gpxl5UKR_t-pIPHlZHSF1EQrhg/exec";
     try {
       final url = Uri.parse(uri);
 
@@ -43,8 +43,7 @@ class _MyAppState extends State<MyApp> {
           await http.get(urlr).then((response) {
             print(convert.jsonDecode(response.body)['status']);
           });
-        } else {
-        }
+        } else {}
       });
     } catch (e) {
       print(e);
@@ -53,7 +52,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final idController = TextEditingController();
+    //final idController = TextEditingController();
     final nameController = TextEditingController();
     final emailController = TextEditingController();
 
@@ -66,34 +65,34 @@ class _MyAppState extends State<MyApp> {
             SizedBox(
               height: 200,
               child: Row(
-                children: [
-                  Expanded(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextField(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'id',
-                        ),
-                        controller: idController,
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final form = FormTable(
-                              action: 'del',
-                              id: int.parse(idController.text),
-                              name: 'name',
-                              email: 'email',
-                              image: '');
-                          await postForm(form);
-                          forms = await getForm();
-                          setState(() {});
-                        },
-                        child: Text("del"),
-                      ),
-                    ],
-                  )),
+                 children: [
+                //   Expanded(
+                //       child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.end,
+                //     children: [
+                //       TextField(
+                //         decoration: const InputDecoration(
+                //           border: OutlineInputBorder(),
+                //           labelText: 'id',
+                //         ),
+                //         controller: idController,
+                //       ),
+                //       ElevatedButton(
+                //         onPressed: () async {
+                //           final form = FormTable(
+                //               action: 'del',
+                //               id: int.parse(idController.text),
+                //               name: 'name',
+                //               email: 'email',
+                //               image: '');
+                //           await postForm(form);
+                //           forms = await getForm();
+                //           setState(() {});
+                //         },
+                //         child: Text("del"),
+                //       ),
+                //     ],
+                //   )),
                   Expanded(
                       child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -119,11 +118,11 @@ class _MyAppState extends State<MyApp> {
                               id: 0,
                               name: nameController.text.toString(),
                               email: emailController.text.toString(),
-                              image: 'https://kartinkived.ru/wp-content/uploads/2021/12/avatarka-dlya-vatsapa-panda-v-ochkah.jpg');
+                              image:
+                                  'https://kartinkived.ru/wp-content/uploads/2021/12/avatarka-dlya-vatsapa-panda-v-ochkah.jpg');
                           await postForm(form);
                           forms = await getForm();
                           setState(() {});
-
                         },
                         child: Text('put'),
                       ),
@@ -148,7 +147,37 @@ class _MyAppState extends State<MyApp> {
             if (forms.isEmpty)
               CircularProgressIndicator()
             else
-              Expanded(child: builForm(forms)),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: forms.length,
+                    itemBuilder: (context, index) {
+                      final form = forms[index];
+                      return Card(
+                        child: ListTile(
+                          trailing: IconButton(
+                            onPressed: () async {
+                              final formDel = FormTable(
+                                  action: 'del',
+                                  id: form.id,
+                                  name: 'name',
+                                  email: 'email',
+                                  image: '');
+                              await postForm(formDel);
+                              forms = await getForm();
+                              setState(() {});
+                            },
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          ),
+                          leading: Image.network(form.image),
+                          title: Text(form.name),
+                          subtitle: Text(form.email),
+                        ),
+                      );
+                    }),
+              ),
           ],
         ),
       ),
@@ -162,7 +191,13 @@ Widget builForm(List<FormTable> forms) => ListView.builder(
       final form = forms[index];
       return Card(
         child: ListTile(
-          trailing: Text('id: ${form.id.toString()}'),
+          trailing: IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+          ),
           leading: Image.network(form.image),
           title: Text(form.name),
           subtitle: Text(form.email),
