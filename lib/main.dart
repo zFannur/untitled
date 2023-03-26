@@ -22,8 +22,8 @@ class _MyAppState extends State<MyApp> {
     const uri =
         "https://script.google.com/macros/s/AKfycbxNlbz56_uJozTrBB0yju6Bdfjm4UUNPPcF7-Y-yz0enlXL2h9jzdhkOqVu-UT5Y5ovUg/exec";
 
-    return await http.get(Uri.parse(uri)).then((responce) {
-      var jsonForm = convert.jsonDecode(responce.body) as List;
+    return await http.get(Uri.parse(uri)).then((response) {
+      var jsonForm = convert.jsonDecode(response.body) as List;
       //print(responce.body);
       //print(jsonForm[0]);
       return jsonForm.map((json) => FormTable.fromJson(json)).toList();
@@ -37,13 +37,13 @@ class _MyAppState extends State<MyApp> {
       final url = Uri.parse(uri);
 
       await http.post(url, body: form.toJson()).then((response) async {
-        //print(form.toJson());
         //print(response.statusCode);
         if (response.statusCode == 302) {
-          var jsonResponce = convert.jsonDecode(response.body)['status'];
-          print(jsonResponce);
+          var urlr = Uri.parse(response.headers['location']!);
+          await http.get(urlr).then((response) {
+            print(convert.jsonDecode(response.body)['status']);
+          });
         } else {
-          //print(convert.jsonDecode(response.body)['status']);
         }
       });
     } catch (e) {
@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
               height: 200,
               child: Row(
                 children: [
@@ -123,8 +123,9 @@ class _MyAppState extends State<MyApp> {
                           await postForm(form);
                           forms = await getForm();
                           setState(() {});
+
                         },
-                        child: Text("put"),
+                        child: Text('put'),
                       ),
                     ],
                   )),
