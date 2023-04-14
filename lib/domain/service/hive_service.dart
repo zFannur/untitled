@@ -9,7 +9,12 @@ class HiveService {
     await localDataSourceHive.init();
   }
 
+  void addList(List<Operation> operation) {
+    localDataSourceHive.addListOperationHive(operation.map((e) => e.operationToOperationModel(e)).toList());
+  }
+
   void addOperation({
+    int? id,
     required String date,
     required String type,
     required String form,
@@ -23,7 +28,7 @@ class HiveService {
       form: form,
       sum: sum,
       note: note,
-      id: 0,
+      id: id ?? getNewId(),
     );
 
     localDataSourceHive

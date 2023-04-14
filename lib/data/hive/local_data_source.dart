@@ -20,6 +20,10 @@ class LocalDataSourceHive {
     Hive.box<OperationModelHive>(operationKey).add(operationModelHive);
   }
 
+  void addListOperationHive(List<OperationModelHive> operationModelHive) {
+    Hive.box<OperationModelHive>(operationKey).addAll(operationModelHive);
+  }
+
   void changeOperationHive(int index, OperationModelHive operationModelHive) {
     Hive.box<OperationModelHive>(operationKey).putAt(index, operationModelHive);
   }
@@ -38,12 +42,10 @@ class LocalDataSourceHive {
 
   void deleteOperationHive(int index) {
     Hive.box<OperationModelHive>(operationKey).deleteAt(index);
-
   }
 
   List<OperationModelHive> getOperationLocal() {
     final result = Hive.box<OperationModelHive>(operationKey).values.toList();
     return result;
   }
-
 }

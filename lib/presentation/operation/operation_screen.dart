@@ -22,23 +22,6 @@ class OperationScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // SizedBox(
-          //   height: 200,
-          //   child: Row(
-          //     children: [
-          //       Expanded(
-          //           child: Column(
-          //         mainAxisAlignment: MainAxisAlignment.end,
-          //         children: const [
-          //           _StatusTitleWidget(),
-          //           //_NameTextFieldWidget(),
-          //           //_EmailTextFieldWidget(),
-          //           //_SendButtonWidget(),
-          //         ],
-          //       )),
-          //     ],
-          //   ),
-          // ),
           if (context
               .select((OperationModel value) => value.state.operations)
               .isEmpty)

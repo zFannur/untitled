@@ -47,13 +47,12 @@ class OperationModel extends ChangeNotifier {
     loadOperation();
   }
 
-  Future<void> loadOperation() async {
-    _state.operations = await _operationService.getOperation();
-    // if(_state.operations.isEmpty) {
-    //   _state.operations = await _operationService.getOperation();
-    // } else {
-    //   _state.operations = _hiveService.getOperation();
-    // }
+  loadOperation() async {
+    _state.operations = _hiveService.getOperation();
+    if (_state.operations.isEmpty) {
+      _state.operations = await _operationService.getOperation();
+      _hiveService.addList(_state.operations);
+    }
     notifyListeners();
   }
 
@@ -61,7 +60,9 @@ class OperationModel extends ChangeNotifier {
     //_state = _state.copyWith(statusMessage: 'isLoading');
     //notifyListeners();
     _hiveService.deleteOperation(index);
-    _state = _state.copyWith(statusMessage: await _operationService.deleteOperation(id));
+    _state = _state.copyWith(
+        statusMessage: await _operationService.deleteOperation(id));
+    print(_state.statusMessage);
   }
 
   Future<void> onEditButtonPressed(int id) async {
