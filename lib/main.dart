@@ -1,5 +1,19 @@
-import 'dart:convert' as convert;
+import 'package:flutter/material.dart';
 
+import 'domain/service/hive_service.dart';
+import 'internal/application.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HiveService hiveService = HiveService();
+  await hiveService.initHive();
+  runApp(const MyApp());
+}
+
+
+
+/*
+import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
 import 'form.dart';
 import 'package:http/http.dart' as http;
@@ -24,8 +38,6 @@ class _MyAppState extends State<MyApp> {
 
     return await http.get(Uri.parse(uri)).then((response) {
       var jsonForm = convert.jsonDecode(response.body) as List;
-      //print(responce.body);
-      //print(jsonForm[0]);
       return jsonForm.map((json) => FormTable.fromJson(json)).toList();
     });
   }
@@ -39,8 +51,8 @@ class _MyAppState extends State<MyApp> {
       await http.post(url, body: form.toJson()).then((response) async {
         //print(response.statusCode);
         if (response.statusCode == 302) {
-          var urlr = Uri.parse(response.headers['location']!);
-          await http.get(urlr).then((response) {
+          var unary = Uri.parse(response.headers['location']!);
+          await http.get(unary).then((response) {
             print(convert.jsonDecode(response.body)['status']);
           });
         } else {}
@@ -65,34 +77,7 @@ class _MyAppState extends State<MyApp> {
             SizedBox(
               height: 200,
               child: Row(
-                 children: [
-                //   Expanded(
-                //       child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.end,
-                //     children: [
-                //       TextField(
-                //         decoration: const InputDecoration(
-                //           border: OutlineInputBorder(),
-                //           labelText: 'id',
-                //         ),
-                //         controller: idController,
-                //       ),
-                //       ElevatedButton(
-                //         onPressed: () async {
-                //           final form = FormTable(
-                //               action: 'del',
-                //               id: int.parse(idController.text),
-                //               name: 'name',
-                //               email: 'email',
-                //               image: '');
-                //           await postForm(form);
-                //           forms = await getForm();
-                //           setState(() {});
-                //         },
-                //         child: Text("del"),
-                //       ),
-                //     ],
-                //   )),
+                children: [
                   Expanded(
                       child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -124,7 +109,7 @@ class _MyAppState extends State<MyApp> {
                           forms = await getForm();
                           setState(() {});
                         },
-                        child: Text('put'),
+                        child: const Text('put'),
                       ),
                     ],
                   )),
@@ -137,7 +122,7 @@ class _MyAppState extends State<MyApp> {
                           forms = await getForm();
                           setState(() {});
                         },
-                        child: Text("get"),
+                        child: const Text("get"),
                       ),
                     ],
                   )),
@@ -145,7 +130,7 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
             if (forms.isEmpty)
-              CircularProgressIndicator()
+              const CircularProgressIndicator()
             else
               Expanded(
                 child: ListView.builder(
@@ -154,7 +139,16 @@ class _MyAppState extends State<MyApp> {
                       final form = forms[index];
                       return Card(
                         child: ListTile(
-                          trailing: IconButton(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return Expanded(
+                                  child: Image.network(form.image),
+                                );
+                              },
+                            ));
+                          },
+                          trailing: form.name != 'name' ? IconButton(
                             onPressed: () async {
                               final formDel = FormTable(
                                   action: 'del',
@@ -166,11 +160,11 @@ class _MyAppState extends State<MyApp> {
                               forms = await getForm();
                               setState(() {});
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.delete,
                               color: Colors.red,
                             ),
-                          ),
+                          ) : null,
                           leading: Image.network(form.image),
                           title: Text(form.name),
                           subtitle: Text(form.email),
@@ -184,23 +178,4 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-Widget builForm(List<FormTable> forms) => ListView.builder(
-    itemCount: forms.length,
-    itemBuilder: (context, index) {
-      final form = forms[index];
-      return Card(
-        child: ListTile(
-          trailing: IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.delete,
-              color: Colors.red,
-            ),
-          ),
-          leading: Image.network(form.image),
-          title: Text(form.name),
-          subtitle: Text(form.email),
-        ),
-      );
-    });
+ */
