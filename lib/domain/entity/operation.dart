@@ -77,8 +77,8 @@ class Operation {
 }
 
 class Argument {
-  Operation operation;
+  List<Operation> operations;
   int index;
 
-  Argument({required this.operation, required this.index});
+  Argument({required this.operations, required this.index});
 }

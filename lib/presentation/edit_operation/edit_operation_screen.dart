@@ -20,8 +20,9 @@ class EditOperationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.read<EditOperationModel>();
     final arg = ModalRoute.of(context)!.settings.arguments as Argument;
-    final operation = arg.operation;
     final index = arg.index;
+    final operation = arg.operations[index];
+    final operations = arg.operations;
 
     model.changeEditState(
       date: operation.date,
@@ -44,6 +45,7 @@ class EditOperationScreen extends StatelessWidget {
               const SizedBox(height: 10),
               _TypeFieldWidget(
                 type: operation.type,
+                operations: operations,
               ),
               const SizedBox(height: 10),
               _FormFieldWidget(
@@ -105,14 +107,23 @@ class _DataFieldWidget extends StatelessWidget {
 
 class _TypeFieldWidget extends StatelessWidget {
   final String type;
+  final List<Operation> operations;
 
-  const _TypeFieldWidget({Key? key, required this.type}) : super(key: key);
+  const _TypeFieldWidget({Key? key, required this.type, required this.operations}) : super(key: key);
 
-  Future<void> _addTypeDialog(BuildContext context) async {
-    return showDialog<void>(
+  Future<String?> _addTypeDialog(BuildContext context, String text) async {
+    return await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        TextEditingController controller = TextEditingController(text: text);
+
+        List<String> array = [];
+        for (int i = 0; i < operations.length; i++) {
+          array.add(operations[i].type);
+        };
+        List<String> filter = array;
+
         return AlertDialog(
           content: SingleChildScrollView(
             child: ListBody(
@@ -120,6 +131,7 @@ class _TypeFieldWidget extends StatelessWidget {
                 Text('Type'),
                 SizedBox(height: 10),
                 TextField(
+                  controller: controller,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                   ),
@@ -131,14 +143,21 @@ class _TypeFieldWidget extends StatelessWidget {
                 ),
                 SizedBox(
                   height: 300,
+                  width: 300,
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Card(
-                          child: ListTile(
-                            title: Text('1'),
-                          ),
-                        ),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: filter.length,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                child: ListTile(
+                                  title: Text(filter[index]),
+                                  onTap: () => controller.text = filter[index],
+                                ),
+                              );
+                            }),
                       ],
                     ),
                   ),
@@ -148,9 +167,15 @@ class _TypeFieldWidget extends StatelessWidget {
           ),
           actions: <Widget>[
             ElevatedButton(
+              child: Text('close'),
+              onPressed: () {
+                Navigator.of(context).pop(text);
+              },
+            ),
+            ElevatedButton(
               child: Text('Add'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(controller.text);
               },
             ),
           ],
@@ -161,6 +186,7 @@ class _TypeFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _controller = TextEditingController();
     final model = context.read<EditOperationModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,8 +205,12 @@ class _TypeFieldWidget extends StatelessWidget {
             border: OutlineInputBorder(),
             labelText: 'type of transaction',
           ),
-          onChanged: model.changeType,
-          //onTap: () async => await _addTypeDialog(context),
+          onTap: () async {
+            final String type =
+                await _addTypeDialog(context, _controller.text) ?? '';
+            model.changeType(type);
+            _controller.text = type;
+          },
         ),
       ],
     );
