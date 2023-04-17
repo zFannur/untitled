@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:untitled/domain/service/hive_service.dart';
 import 'package:untitled/domain/service/operation_service.dart';
 import '../../domain/entity/operation.dart';
@@ -44,15 +45,28 @@ class OperationModel extends ChangeNotifier {
   OperationModelState get state => _state;
 
   OperationModel() {
-    loadOperation();
+    init();
+  }
+
+  init() async {
+    List<Operation> local = [];
+    List<Operation> sheet = [];
+
+    sheet = await _operationService.getOperation();
+    local = _hiveService.getOperation();
+
+    if(listEquals(local,sheet)) { //TODO: сравнение не работает в будущем сделать чтобы работало
+      _state.operations = _hiveService.getOperation();
+    } else {
+      _hiveService.deleteAll();
+      _state.operations = await _operationService.getOperation();
+      _hiveService.addList(_state.operations);
+    }
+    notifyListeners();
   }
 
   loadOperation() async {
     _state.operations = _hiveService.getOperation();
-    if (_state.operations.isEmpty) {
-      _state.operations = await _operationService.getOperation();
-      _hiveService.addList(_state.operations);
-    }
     notifyListeners();
   }
 
@@ -63,12 +77,6 @@ class OperationModel extends ChangeNotifier {
     _state = _state.copyWith(
         statusMessage: await _operationService.deleteOperation(id));
     print(_state.statusMessage);
-  }
-
-  Future<void> onEditButtonPressed(int id) async {
-    //_state = _state.copyWith(statusMessage: 'isLoading');
-    //notifyListeners();
-    //_state = _state.copyWith(statusMessage: await _operationService.deleteOperation(id));
-    loadOperation();
+    await loadOperation();
   }
 }

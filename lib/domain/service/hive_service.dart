@@ -14,7 +14,7 @@ class HiveService {
   }
 
   void addOperation({
-    int? id,
+    required int id,
     required String date,
     required String type,
     required String form,
@@ -28,7 +28,7 @@ class HiveService {
       form: form,
       sum: sum,
       note: note,
-      id: id ?? getNewId(),
+      id: id,
     );
 
     localDataSourceHive
@@ -37,12 +37,14 @@ class HiveService {
 
   List<Operation> getOperation() {
     List<Operation> operations = [];
-    operations = localDataSourceHive.getOperationLocal().cast<Operation>();
-    print(operations.last.id);
+    operations = localDataSourceHive.getOperationLocal();
+    print(operations.isEmpty ? 'empty' : operations.last.id);
     return operations;
   }
 
-  void changeOperation({
+  void editOperation({
+    required int id,
+    required int index,
     required String date,
     required String type,
     required String form,
@@ -56,14 +58,18 @@ class HiveService {
       form: form,
       sum: sum,
       note: note,
-      id: getNewId(),
+      id: id,
     );
 
-    //localDataSourceHive.changeOperationHive(operation.operationToOperationModel(operation));
+    localDataSourceHive.editOperationHive(index, operation.operationToOperationModel(operation));
   }
 
   int getNewId() {
     return localDataSourceHive.getId();
+  }
+
+  void deleteAll() {
+    localDataSourceHive.deleteAllHive();
   }
 
   void deleteOperation(int index) {

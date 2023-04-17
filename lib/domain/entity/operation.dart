@@ -75,3 +75,10 @@ class Operation {
     return operationModel;
   }
 }
+
+class Argument {
+  Operation operation;
+  int index;
+
+  Argument({required this.operation, required this.index});
+}

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../../domain/service/hive_service.dart';
 import '../../domain/service/operation_service.dart';
 
-class AddOperationModelState {
+class EditOperationModelState {
   final String date;
   final String type;
   final String form;
   final int sum;
   final String note;
 
-  AddOperationModelState({
+  EditOperationModelState({
     required this.date,
     required this.type,
     required this.form,
@@ -18,14 +18,14 @@ class AddOperationModelState {
     required this.note,
   });
 
-  AddOperationModelState copyWith({
+  EditOperationModelState copyWith({
     String? date,
     String? type,
     String? form,
     int? sum,
     String? note,
   }) {
-    return AddOperationModelState(
+    return EditOperationModelState(
       date: date ?? this.date,
       type: type ?? this.type,
       form: form ?? this.form,
@@ -35,16 +35,30 @@ class AddOperationModelState {
   }
 }
 
-class AddOperationModel extends ChangeNotifier {
+class EditOperationModel extends ChangeNotifier {
   HiveService hiveService = HiveService();
   final _operationService = OperationService();
-  var _state = AddOperationModelState(
+  var _state = EditOperationModelState(
     date: '',
     type: '',
     form: '',
     sum: 0,
     note: '',
   );
+
+  void changeEditState({
+    required String? date,
+    required String type,
+    required String form,
+    required int sum,
+    required String note,
+  }) {
+    _state = _state.copyWith(date: date ?? DateTime.now().toString());
+    _state = _state.copyWith(type: type);
+    _state = _state.copyWith(form: form);
+    _state = _state.copyWith(sum: sum);
+    _state = _state.copyWith(note: note);
+  }
 
   void changeDate(String value) {
     if (_state.date == value) return;
@@ -76,7 +90,7 @@ class AddOperationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> onAddButtonPressed() async {
+  Future<void> onEditButtonPressed(int index, int id) async {
     var statusMessage = '';
     final date = _state.date;
     final type = _state.type;
@@ -84,21 +98,21 @@ class AddOperationModel extends ChangeNotifier {
     final sum = _state.sum;
     final note = _state.note;
 
-    if (date.isEmpty || type.isEmpty || form.isEmpty || sum.toString().isEmpty) {
-      return;
-    }
     try {
       final newId = hiveService.getNewId();
-      hiveService.addOperation(
-        id: newId,
+      //_state = _state.copyWith(statusMessage: 'isLoading');
+      //notifyListeners();
+      hiveService.editOperation(
+        id: id,
+        index: index,
         date: date,
         type: type,
         form: form,
         sum: sum,
         note: note,
       );
-      statusMessage = await _operationService.sendOperation(
-        id: newId,
+      statusMessage = await _operationService.editOperation(
+        id: id,
         date: date,
         type: type,
         form: form,

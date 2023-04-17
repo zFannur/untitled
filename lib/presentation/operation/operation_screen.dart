@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/domain/entity/operation.dart';
 
 import 'operation_model.dart';
 
@@ -25,7 +26,7 @@ class OperationScreen extends StatelessWidget {
           if (context
               .select((OperationModel value) => value.state.operations)
               .isEmpty)
-            const CircularProgressIndicator()
+            const Center(child: CircularProgressIndicator())
           else
             const _ListOperationsWidget(),
         ],
@@ -56,7 +57,9 @@ class _ListOperationsWidget extends StatelessWidget {
             return Card(
                 child: Row(
               children: [
-                Expanded(child: Text(operation.date)),
+                Expanded(
+                    child: Text(
+                        '${DateTime.parse(operation.date).day}:${DateTime.parse(operation.date).month}:${DateTime.parse(operation.date).year}')),
                 Expanded(
                   flex: 2,
                   child: Column(
@@ -66,10 +69,13 @@ class _ListOperationsWidget extends StatelessWidget {
                 Expanded(child: Text(operation.sum.toString())),
                 Expanded(
                   child: IconButton(
+                    // edit button
                     onPressed: () async {
-                      // final model = context.read<OperationModel>();
-                      // await Navigator.of(context).pushNamed('/addOperation');
-                      // await model.loadOperation();
+                      final model = context.read<OperationModel>();
+                      final arg = Argument(operation: operation, index: index);
+                      await Navigator.of(context)
+                          .pushNamed('/editOperation', arguments: arg);
+                      await model.loadOperation();
                     },
                     icon: const Icon(
                       Icons.edit,
@@ -79,9 +85,9 @@ class _ListOperationsWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: IconButton(
-                    onPressed: () async {
+                    // delete button
+                    onPressed: () {
                       model.onDeleteButtonPressed(index, operation.id);
-                      await model.loadOperation();
                     },
                     icon: const Icon(
                       Icons.delete,

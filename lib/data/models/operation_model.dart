@@ -38,4 +38,17 @@ class OperationModelHive extends Operation {
           sum: sum,
           note: note,
         );
+
+  OperationModelHive operationToOperationModel(Operation operation) {
+    final operationModel = OperationModelHive(
+      id: operation.id,
+      action: operation.action,
+      date: operation.date,
+      type: operation.type,
+      form: operation.form,
+      sum: operation.sum,
+      note: operation.note,
+    );
+    return operationModel;
+  }
 }

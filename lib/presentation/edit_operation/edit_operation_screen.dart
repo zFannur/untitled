@@ -2,46 +2,68 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:untitled/presentation/add_operation/add_operation_model.dart';
+import 'package:untitled/domain/entity/operation.dart';
 
-class AddOperationScreen extends StatelessWidget {
-  const AddOperationScreen({Key? key}) : super(key: key);
+import 'edit_operation_model.dart';
+
+class EditOperationScreen extends StatelessWidget {
+  const EditOperationScreen({Key? key}) : super(key: key);
 
   static Widget create() {
     return ChangeNotifierProvider(
-      create: (_) => AddOperationModel(),
-      child: const AddOperationScreen(),
+      create: (_) => EditOperationModel(),
+      child: const EditOperationScreen(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    final model = context.read<EditOperationModel>();
+    final arg = ModalRoute.of(context)!.settings.arguments as Argument;
+    final operation = arg.operation;
+    final index = arg.index;
+
+    model.changeEditState(
+      date: operation.date,
+      type: operation.type,
+      form: operation.form,
+      sum: operation.sum,
+      note: operation.note,
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add operation'),
+        title: const Text('Edit operation'),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            children: const [
-              _DataFieldWidget(),
-              SizedBox(height: 10),
-              _TypeFieldWidget(),
-              SizedBox(height: 10),
-              _FormFieldWidget(),
-              SizedBox(height: 10),
-              _SumFieldWidget(),
-              SizedBox(height: 10),
-              _NoteFieldWidget(),
+            children: [
+              _DataFieldWidget(date: operation.date),
+              const SizedBox(height: 10),
+              _TypeFieldWidget(
+                type: operation.type,
+              ),
+              const SizedBox(height: 10),
+              _FormFieldWidget(
+                form: operation.form,
+              ),
+              const SizedBox(height: 10),
+              _SumFieldWidget(
+                sum: operation.sum,
+              ),
+              const SizedBox(height: 10),
+              _NoteFieldWidget(
+                note: operation.note,
+              ),
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          model.onAddButtonPressed();
+          model.onEditButtonPressed(index, operation.id);
           Navigator.of(context).pop();
         },
         child: const Icon(Icons.add),
@@ -51,12 +73,13 @@ class AddOperationScreen extends StatelessWidget {
 }
 
 class _DataFieldWidget extends StatelessWidget {
-  const _DataFieldWidget({Key? key}) : super(key: key);
+  final String date;
 
+  const _DataFieldWidget({Key? key, required this.date}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    final model = context.read<EditOperationModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -67,21 +90,23 @@ class _DataFieldWidget extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        TextField(
-          decoration: InputDecoration(
-            suffixIcon: Icon(Icons.calendar_month),
-            border: OutlineInputBorder(),
-            labelText: 'date of operation',
-          ),
-          onChanged: model.changeDate,
-        ),
+        TextFormField(
+            initialValue: date,
+            decoration: InputDecoration(
+                suffixIcon: Icon(Icons.calendar_month),
+                border: OutlineInputBorder(),
+                labelText: 'date of operation',
+                helperText: date),
+            onChanged: model.changeDate),
       ],
     );
   }
 }
 
 class _TypeFieldWidget extends StatelessWidget {
-  const _TypeFieldWidget({Key? key}) : super(key: key);
+  final String type;
+
+  const _TypeFieldWidget({Key? key, required this.type}) : super(key: key);
 
   Future<void> _addTypeDialog(BuildContext context) async {
     return showDialog<void>(
@@ -136,7 +161,7 @@ class _TypeFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    final model = context.read<EditOperationModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -147,7 +172,8 @@ class _TypeFieldWidget extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        TextField(
+        TextFormField(
+          initialValue: type,
           decoration: InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
@@ -162,11 +188,13 @@ class _TypeFieldWidget extends StatelessWidget {
 }
 
 class _FormFieldWidget extends StatelessWidget {
-  const _FormFieldWidget({Key? key}) : super(key: key);
+  String form;
+
+  _FormFieldWidget({Key? key, required this.form}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    final model = context.read<EditOperationModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -177,7 +205,8 @@ class _FormFieldWidget extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        TextField(
+        TextFormField(
+          initialValue: form,
           decoration: InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
@@ -191,11 +220,13 @@ class _FormFieldWidget extends StatelessWidget {
 }
 
 class _SumFieldWidget extends StatelessWidget {
-  const _SumFieldWidget({Key? key}) : super(key: key);
+  final int sum;
+
+  const _SumFieldWidget({Key? key, required this.sum}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    final model = context.read<EditOperationModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -206,7 +237,8 @@ class _SumFieldWidget extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        TextField(
+        TextFormField(
+          initialValue: sum.toString(),
           decoration: InputDecoration(
             suffixIcon: Icon(Icons.money),
             border: OutlineInputBorder(),
@@ -220,11 +252,13 @@ class _SumFieldWidget extends StatelessWidget {
 }
 
 class _NoteFieldWidget extends StatelessWidget {
-  const _NoteFieldWidget({Key? key}) : super(key: key);
+  final String note;
+
+  const _NoteFieldWidget({Key? key, required this.note}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    final model = context.read<EditOperationModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -235,7 +269,8 @@ class _NoteFieldWidget extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        TextField(
+        TextFormField(
+          initialValue: note,
           decoration: InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
