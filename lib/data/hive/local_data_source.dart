@@ -5,9 +5,7 @@ import '../models/operation_model.dart';
 
 class LocalDataSourceHive {
   final operationKey = 'operation';
-  final operationSendKey = 'operationSendKey';
-  final operationEditKey = 'operationEditKey';
-
+  final operationSendKey = 'operationSendKey'; // пока разные хранилищи для кеша отправки, потом объеденю
 
   Future<void> init() async {
     final applicationDocumentDir =

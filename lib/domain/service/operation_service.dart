@@ -9,6 +9,7 @@ class OperationService {
   }
 
   Future<String> sendOperation({
+    required String action,
     required int id,
     required String date,
     required String type,
@@ -17,7 +18,7 @@ class OperationService {
     required String note,
   }) async {
     final operation = Operation(
-      action: 'put',
+      action: action,
       date: date,
       type: type,
       form: form,
@@ -27,38 +28,18 @@ class OperationService {
     );
     return await _apiClient.postForm(operation);
   }
-
-  Future<String> editOperation({
-    required int id,
-    required String date,
-    required String type,
-    required String form,
-    required int sum,
-    required String note,
-  }) async {
-    final operation = Operation(
-      action: 'edit',
-      date: date,
-      type: type,
-      form: form,
-      sum: sum,
-      note: note,
-      id: id,
-    );
-    return await _apiClient.postForm(operation);
-  }
-
-  Future<String> deleteOperation(int id) async {
-    final operation = Operation(
-      action: 'del',
-      date: '',
-      type: '',
-      form: '',
-      sum: 0.toInt(),
-      note: '',
-      id: id,
-    );
-
-    return await _apiClient.postForm(operation);
-  }
+  //
+  // Future<String> deleteOperation(int id) async {
+  //   final operation = Operation(
+  //     action: 'del',
+  //     date: '',
+  //     type: '',
+  //     form: '',
+  //     sum: 0.toInt(),
+  //     note: '',
+  //     id: id,
+  //   );
+  //
+  //   return await _apiClient.postForm(operation);
+  // }
 }

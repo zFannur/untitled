@@ -10,7 +10,8 @@ class HiveService {
   }
 
   void addList(List<Operation> operation) {
-    localDataSourceHive.addListOperationHive(operation.map((e) => e.operationToOperationModel(e)).toList());
+    localDataSourceHive.addListOperationHive(
+        operation.map((e) => e.operationToOperationModel(e)).toList());
   }
 
   void addOperation({
@@ -31,28 +32,26 @@ class HiveService {
       id: id,
     );
 
-    localDataSourceHive
-        .addOperationHive(operation.operationToOperationModel(operation), localDataSourceHive.operationKey);
-    localDataSourceHive
-        .addOperationHive(operation.operationToOperationModel(operation), localDataSourceHive.operationSendKey);
+    localDataSourceHive.addOperationHive(
+        operation.operationToOperationModel(operation),
+        localDataSourceHive.operationKey);
+    localDataSourceHive.addOperationHive(
+        operation.operationToOperationModel(operation),
+        localDataSourceHive.operationSendKey);
   }
 
   List<Operation> getOperation() {
     List<Operation> operations = [];
-    operations = localDataSourceHive.getOperationLocal(localDataSourceHive.operationKey);
+    operations =
+        localDataSourceHive.getOperationLocal(localDataSourceHive.operationKey);
     print(operations.isEmpty ? 'empty' : operations.last.id);
     return operations;
   }
 
   List<Operation> getCache() {
     List<Operation> operations = [];
-    operations = localDataSourceHive.getOperationLocal(localDataSourceHive.operationSendKey);
-    return operations;
-  }
-
-  List<Operation> getEdited() {
-    List<Operation> operations = [];
-    operations = localDataSourceHive.getOperationLocal(localDataSourceHive.operationEditKey);
+    operations = localDataSourceHive
+        .getOperationLocal(localDataSourceHive.operationSendKey);
     return operations;
   }
 
@@ -66,7 +65,7 @@ class HiveService {
     required String note,
   }) {
     final operation = Operation(
-      action: '',
+      action: 'edit',
       date: date,
       type: type,
       form: form,
@@ -75,8 +74,11 @@ class HiveService {
       id: id,
     );
 
-    localDataSourceHive.editOperationHive(index, operation.operationToOperationModel(operation));
-    localDataSourceHive.addOperationHive(operation.operationToOperationModel(operation), localDataSourceHive.operationSendKey);
+    localDataSourceHive.editOperationHive(
+        index, operation.operationToOperationModel(operation));
+    localDataSourceHive.addOperationHive(
+        operation.operationToOperationModel(operation),
+        localDataSourceHive.operationSendKey);
   }
 
   int getNewId() {
@@ -88,10 +90,30 @@ class HiveService {
   }
 
   void deleteOperationCache(int index) {
-    localDataSourceHive.deleteOperationHive(index, localDataSourceHive.operationSendKey);
+    localDataSourceHive.deleteOperationHive(
+        index, localDataSourceHive.operationSendKey);
   }
 
-  void deleteOperation(int index) {
-    localDataSourceHive.deleteOperationHive(index, localDataSourceHive.operationKey);
+  void deleteOperation(
+    int index,
+    int id,
+  ) {
+    final operation = Operation(
+      action: 'del',
+      date: '',
+      type: '',
+      form: '',
+      sum: 0,
+      note: '',
+      id: id,
+    );
+    {
+      localDataSourceHive.deleteOperationHive(
+          index, localDataSourceHive.operationKey);
+
+      localDataSourceHive.addOperationHive(
+          operation.operationToOperationModel(operation),
+          localDataSourceHive.operationSendKey);
+    }
   }
 }

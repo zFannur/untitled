@@ -50,13 +50,16 @@ class _ActionAppBarWidget extends StatelessWidget {
     return model.state.isSending
         ? Row(
             children: [
-              Icon(Icons.file_upload),
+              IconButton(
+                onPressed: model.loadOperation(),
+                icon: const Icon(Icons.file_upload),
+              ),
               Text(model.state.statusMessage)
             ],
           )
         : IconButton(
             onPressed: model.reloadOperationInSheet,
-            icon: Icon(Icons.download),
+            icon: const Icon(Icons.download),
           );
   }
 }
