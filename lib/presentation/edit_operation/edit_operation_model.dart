@@ -110,7 +110,6 @@ class EditOperationModel extends ChangeNotifier {
     final note = _state.note;
 
     try {
-      final newId = hiveService.getNewId();
       //_state = _state.copyWith(statusMessage: 'isLoading');
       //notifyListeners();
       hiveService.editOperation(
@@ -122,14 +121,14 @@ class EditOperationModel extends ChangeNotifier {
         sum: sum,
         note: note,
       );
-      statusMessage = await _operationService.editOperation(
-        id: id,
-        date: date,
-        type: type,
-        form: form,
-        sum: sum,
-        note: note,
-      );
+      // statusMessage = await _operationService.editOperation(
+      //   id: id,
+      //   date: date,
+      //   type: type,
+      //   form: form,
+      //   sum: sum,
+      //   note: note,
+      // );
     } catch (e) {
       statusMessage = 'Ошибка';
     }

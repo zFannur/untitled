@@ -47,10 +47,12 @@ class AddOperationModel extends ChangeNotifier {
     note: '',
   );
 
-  void changeDate(String value) {
+  void changeDate(String value, bool notifyListener) {
     if (_state.date == value) return;
     _state = _state.copyWith(date: DateTime.now().toString());
-    notifyListeners();
+    if(notifyListener) {
+      notifyListeners();
+    }
   }
 
   void changeType(String value) {
@@ -98,14 +100,14 @@ class AddOperationModel extends ChangeNotifier {
         sum: sum,
         note: note,
       );
-      statusMessage = await _operationService.sendOperation(
-        id: newId,
-        date: date,
-        type: type,
-        form: form,
-        sum: sum,
-        note: note,
-      );
+      // statusMessage = await _operationService.sendOperation(
+      //   id: newId,
+      //   date: date,
+      //   type: type,
+      //   form: form,
+      //   sum: sum,
+      //   note: note,
+      // );
     } catch (e) {
       statusMessage = 'Ошибка';
     }

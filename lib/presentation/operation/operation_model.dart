@@ -55,7 +55,8 @@ class OperationModel extends ChangeNotifier {
     sheet = await _operationService.getOperation();
     local = _hiveService.getOperation();
 
-    if(listEquals(local,sheet)) { //TODO: сравнение не работает в будущем сделать чтобы работало
+    if (listEquals(local, sheet)) {
+      /*#TODO:сравнение_не_работает_в_будущем_сделать_чтобы_работало*/
       _state.operations = _hiveService.getOperation();
     } else {
       _hiveService.deleteAll();
@@ -65,20 +66,67 @@ class OperationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  loadOperation() {
+  loadOperation() async {
+    List<Operation> cache = _hiveService.getCache();
+    List<Operation> edit = _hiveService.getCache();
     _state.operations = _hiveService.getOperation();
+
+    if (cache.isNotEmpty) {
+      _state = _state.copyWith(isSending: true);
+      try {
+        for (int i = cache.length - 1; i >= 0; i--) {
+          _state = _state.copyWith(statusMessage: (i + 1).toString());
+          notifyListeners();
+          final status = await _operationService.sendOperation(
+            id: cache[i].id,
+            date: cache[i].date,
+            type: cache[i].type,
+            form: cache[i].form,
+            sum: cache[i].sum,
+            note: cache[i].note,
+          );
+          print(status);
+          _hiveService.deleteOperationCache(i);
+        }
+      } catch (e) {}
+      _state = _state.copyWith(isSending: false);
+    }
+
+    if (edit.isNotEmpty) {
+      _state = _state.copyWith(isSending: true);
+      try {
+        for (int i = edit.length - 1; i >= 0; i--) {
+          _state = _state.copyWith(statusMessage: (i + 1).toString());
+          notifyListeners();
+          final status = await _operationService.editOperation(
+            id: edit[i].id,
+            date: edit[i].date,
+            type: edit[i].type,
+            form: edit[i].form,
+            sum: edit[i].sum,
+            note: edit[i].note,
+          );
+          print(status);
+          _hiveService.deleteOperationCache(i);
+        }
+      } catch (e) {}
+
+      _state = _state.copyWith(isSending: false);
+    }
     notifyListeners();
   }
 
-  Future<void> onAddOperationButtonPressed(BuildContext context, List<Operation> operations) async {
-    await Navigator.of(context).pushNamed('/addOperation', arguments: operations);
+  Future<void> onAddOperationButtonPressed(
+      BuildContext context, List<Operation> operations) async {
+    await Navigator.of(context)
+        .pushNamed('/addOperation', arguments: operations);
     await loadOperation();
   }
 
-  Future<void> onEditOperationButtonPressed({required BuildContext context, required int index}) async {
+  Future<void> onEditOperationButtonPressed(
+      {required BuildContext context, required int index}) async {
     final arg = Argument(operations: state.operations, index: index);
-    await Navigator.of(context)
-        .pushNamed('/editOperation', arguments: arg);
+    await Navigator.of(context).pushNamed('/editOperation', arguments: arg);
     await loadOperation();
   }
 

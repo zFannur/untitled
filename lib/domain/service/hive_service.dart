@@ -50,6 +50,12 @@ class HiveService {
     return operations;
   }
 
+  List<Operation> getEdited() {
+    List<Operation> operations = [];
+    operations = localDataSourceHive.getOperationLocal(localDataSourceHive.operationEditKey);
+    return operations;
+  }
+
   void editOperation({
     required int id,
     required int index,
@@ -70,6 +76,7 @@ class HiveService {
     );
 
     localDataSourceHive.editOperationHive(index, operation.operationToOperationModel(operation));
+    localDataSourceHive.addOperationHive(operation.operationToOperationModel(operation), localDataSourceHive.operationSendKey);
   }
 
   int getNewId() {

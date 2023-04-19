@@ -60,7 +60,7 @@ class _DataFieldWidget extends StatelessWidget {
     DateTime date = DateTime.now();
     TextEditingController controller =
         TextEditingController(text: date.toString());
-    model.changeDate(date.toString());
+    model.changeDate(date.toString(), false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +82,7 @@ class _DataFieldWidget extends StatelessWidget {
           onTap: () async {
             date = await model.selectDate(context);
             controller.text = date.toString();
-            model.changeDate(date.toString());
+            model.changeDate(date.toString(), true);
           },
         ),
       ],

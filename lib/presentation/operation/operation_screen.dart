@@ -19,6 +19,7 @@ class OperationScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Operations'),
+        leading: const _ActionAppBarWidget(),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -32,10 +33,31 @@ class OperationScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => model.onAddOperationButtonPressed(context, model.state.operations),
+        onPressed: () =>
+            model.onAddOperationButtonPressed(context, model.state.operations),
         child: const Icon(Icons.add),
       ),
     );
+  }
+}
+
+class _ActionAppBarWidget extends StatelessWidget {
+  const _ActionAppBarWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.watch<OperationModel>();
+    return model.state.isSending
+        ? Row(
+            children: [
+              Icon(Icons.file_upload),
+              Text(model.state.statusMessage)
+            ],
+          )
+        : IconButton(
+            onPressed: model.init(),
+            icon: Icon(Icons.download),
+          );
   }
 }
 
