@@ -51,7 +51,9 @@ class _ActionAppBarWidget extends StatelessWidget {
         ? Row(
             children: [
               IconButton(
-                onPressed: model.loadOperation(),
+                onPressed: () async {
+                  await model.loadOperation();
+                },
                 icon: const Icon(Icons.file_upload),
               ),
               Text(model.state.statusMessage)
