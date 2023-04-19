@@ -68,23 +68,25 @@ class OperationModel extends ChangeNotifier {
 
   void reloadOperationInSheet() async {
     _state.operations.clear();
+    _hiveService.deleteAll();
     notifyListeners();
     _state.operations = await _operationService.getOperation();
+    _hiveService.addList(_state.operations);
     notifyListeners();
   }
 
   loadOperation() async {
     List<Operation> cache = _hiveService.getCache();
-    List<Operation> edit = _hiveService.getCache();
     _state.operations = _hiveService.getOperation();
+    _state = _state.copyWith(statusMessage: (cache.length).toString());
+    notifyListeners();
 
     if (cache.isNotEmpty) {
       _state = _state.copyWith(isSending: true);
       try {
         for (int i = cache.length - 1; i >= 0; i--) {
-          _state = _state.copyWith(statusMessage: (i + 1).toString());
-          notifyListeners();
           final status = await _operationService.sendOperation(
+            action: cache[i].action,
             id: cache[i].id,
             date: cache[i].date,
             type: cache[i].type,
@@ -92,33 +94,15 @@ class OperationModel extends ChangeNotifier {
             sum: cache[i].sum,
             note: cache[i].note,
           );
-          print(status);
-          _hiveService.deleteOperationCache(i);
+          print('sendOperationAction: ${cache[i].action} , status: $status');
+          if (status == 'SUCCESS') {
+            if(i == 0) _state = _state.copyWith(isSending: false);
+            _state = _state.copyWith(statusMessage: i.toString());
+            _hiveService.deleteOperationCache(i);
+            notifyListeners();
+          }
         }
       } catch (e) {}
-      _state = _state.copyWith(isSending: false);
-    }
-
-    if (edit.isNotEmpty) {
-      _state = _state.copyWith(isSending: true);
-      try {
-        for (int i = edit.length - 1; i >= 0; i--) {
-          _state = _state.copyWith(statusMessage: (i + 1).toString());
-          notifyListeners();
-          final status = await _operationService.editOperation(
-            id: edit[i].id,
-            date: edit[i].date,
-            type: edit[i].type,
-            form: edit[i].form,
-            sum: edit[i].sum,
-            note: edit[i].note,
-          );
-          print(status);
-          _hiveService.deleteOperationCache(i);
-        }
-      } catch (e) {}
-
-      _state = _state.copyWith(isSending: false);
     }
     notifyListeners();
   }
@@ -140,10 +124,7 @@ class OperationModel extends ChangeNotifier {
   Future<void> onDeleteButtonPressed(int index, int id) async {
     //_state = _state.copyWith(statusMessage: 'isLoading');
     //notifyListeners();
-    _hiveService.deleteOperation(index);
-    _state = _state.copyWith(
-        statusMessage: await _operationService.deleteOperation(id));
-    print(_state.statusMessage);
+    _hiveService.deleteOperation(index, id);
     await loadOperation();
   }
 }
