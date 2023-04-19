@@ -55,7 +55,7 @@ class _ActionAppBarWidget extends StatelessWidget {
             ],
           )
         : IconButton(
-            onPressed: model.init(),
+            onPressed: model.reloadOperationInSheet,
             icon: Icon(Icons.download),
           );
   }

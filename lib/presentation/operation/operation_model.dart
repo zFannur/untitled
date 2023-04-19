@@ -66,6 +66,13 @@ class OperationModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reloadOperationInSheet() async {
+    _state.operations.clear();
+    notifyListeners();
+    _state.operations = await _operationService.getOperation();
+    notifyListeners();
+  }
+
   loadOperation() async {
     List<Operation> cache = _hiveService.getCache();
     List<Operation> edit = _hiveService.getCache();
