@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:untitled/domain/entity/operation.dart';
 
 import 'operation_model.dart';
 
@@ -16,6 +15,7 @@ class OperationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<OperationModel>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Operations'),
@@ -32,11 +32,7 @@ class OperationScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final model = context.read<OperationModel>();
-          await Navigator.of(context).pushNamed('/addOperation');
-          await model.loadOperation();
-        },
+        onPressed: () => model.onAddOperationButtonPressed(context, model.state.operations),
         child: const Icon(Icons.add),
       ),
     );
@@ -60,7 +56,7 @@ class _ListOperationsWidget extends StatelessWidget {
                   child: Row(
                 children: [
                   SizedBox(
-                    width: 65,
+                      width: 65,
                       child: Center(
                         child: Text(
                             '${DateTime.parse(operation.date).day}:${DateTime.parse(operation.date).month}:${DateTime.parse(operation.date).year}'),
@@ -75,13 +71,8 @@ class _ListOperationsWidget extends StatelessWidget {
                   Expanded(
                     child: IconButton(
                       // edit button
-                      onPressed: () async {
-                        final model = context.read<OperationModel>();
-                        final arg = Argument(operations: model.state.operations, index: index);
-                        await Navigator.of(context)
-                            .pushNamed('/editOperation', arguments: arg);
-                        await model.loadOperation();
-                      },
+                      onPressed: () => model.onEditOperationButtonPressed(
+                          context: context, index: index),
                       icon: const Icon(
                         Icons.edit,
                         color: Colors.grey,

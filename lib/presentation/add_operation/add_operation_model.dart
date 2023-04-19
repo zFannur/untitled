@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../domain/entity/operation.dart';
 import '../../domain/service/hive_service.dart';
 import '../../domain/service/operation_service.dart';
 
@@ -109,5 +110,116 @@ class AddOperationModel extends ChangeNotifier {
       statusMessage = 'Ошибка';
     }
     print(statusMessage);
+  }
+
+  Future<DateTime> selectDate(BuildContext context) async {
+    DateTime selectedDate = DateTime.now();
+    final selected = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2030),
+    );
+    if (selected != null && selected != selectedDate) {
+      selectedDate = selected;
+    }
+    return selectedDate;
+  }
+
+  Future<String?> addDialog({
+    required BuildContext context,
+    required String text,
+    required List<Operation> operations,
+    required OperationModelFormType type,
+  }) async {
+    return await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        TextEditingController controller = TextEditingController(text: text);
+        List<String> filter = [];
+
+        switch(type) {
+          case OperationModelFormType.type:
+            var uniques = <String, bool>{};
+            for (var s in operations) {
+              uniques[s.type] = true;
+            }
+            for (var key in uniques.keys) {
+              filter.add(key);
+            }
+            break;
+          case OperationModelFormType.form:
+            var uniques = <String, bool>{};
+            for (var s in operations) {
+              uniques[s.form] = true;
+            }
+            for (var key in uniques.keys) {
+              filter.add(key);
+            }
+            break;
+          case OperationModelFormType.note:
+            var uniques = <String, bool>{};
+            for (var s in operations) {
+              uniques[s.note] = true;
+            }
+            for (var key in uniques.keys) {
+              filter.add(key);
+            }
+            break;
+        }
+
+        return AlertDialog(
+          content: SizedBox(
+            height: 500,
+            width: 300,
+            child: Column(
+              children: [
+                const Text('Type'),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Divider(
+                  height: 4,
+                  color: Colors.black,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: filter.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(filter[index]),
+                            onTap: () => Navigator.of(context).pop(filter[index]),
+                          ),
+                        );
+                      }),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('close'),
+              onPressed: () {
+                Navigator.of(context).pop(text);
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Add'),
+              onPressed: () {
+                Navigator.of(context).pop(controller.text);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

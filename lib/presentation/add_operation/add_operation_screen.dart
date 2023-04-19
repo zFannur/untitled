@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/domain/entity/operation.dart';
 import 'package:untitled/presentation/add_operation/add_operation_model.dart';
 
 class AddOperationScreen extends StatelessWidget {
@@ -16,6 +15,8 @@ class AddOperationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final operations =
+        ModalRoute.of(context)!.settings.arguments as List<Operation>;
     final model = context.read<AddOperationModel>();
     return Scaffold(
       appBar: AppBar(
@@ -25,16 +26,16 @@ class AddOperationScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            children: const [
-              _DataFieldWidget(),
-              SizedBox(height: 10),
-              _TypeFieldWidget(),
-              SizedBox(height: 10),
-              _FormFieldWidget(),
-              SizedBox(height: 10),
-              _SumFieldWidget(),
-              SizedBox(height: 10),
-              _NoteFieldWidget(),
+            children: [
+              const _DataFieldWidget(),
+              const SizedBox(height: 10),
+              _TypeFieldWidget(operations: operations),
+              const SizedBox(height: 10),
+              _FormFieldWidget(operations: operations),
+              const SizedBox(height: 10),
+              const _SumFieldWidget(),
+              const SizedBox(height: 10),
+              _NoteFieldWidget(operations: operations),
             ],
           ),
         ),
@@ -53,26 +54,13 @@ class AddOperationScreen extends StatelessWidget {
 class _DataFieldWidget extends StatelessWidget {
   const _DataFieldWidget({Key? key}) : super(key: key);
 
-  Future<DateTime> _selectDate(BuildContext context) async {
-    DateTime selectedDate = DateTime.now();
-    final selected = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2030),
-    );
-    if (selected != null && selected != selectedDate) {
-      selectedDate = selected;
-    }
-    return selectedDate;
-  }
-
   @override
   Widget build(BuildContext context) {
     final model = context.read<AddOperationModel>();
     DateTime date = DateTime.now();
     TextEditingController controller =
         TextEditingController(text: date.toString());
+    model.changeDate(date.toString());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +80,7 @@ class _DataFieldWidget extends StatelessWidget {
             labelText: 'date of operation',
           ),
           onTap: () async {
-            date = await _selectDate(context);
+            date = await model.selectDate(context);
             controller.text = date.toString();
             model.changeDate(date.toString());
           },
@@ -102,110 +90,42 @@ class _DataFieldWidget extends StatelessWidget {
   }
 }
 
-class _TypeFieldWidget extends StatefulWidget {
-  const _TypeFieldWidget({Key? key}) : super(key: key);
+class _TypeFieldWidget extends StatelessWidget {
+  List<Operation> operations;
 
-  @override
-  State<_TypeFieldWidget> createState() => _TypeFieldWidgetState();
-}
-
-class _TypeFieldWidgetState extends State<_TypeFieldWidget> {
-
-  Future<String?> _addTypeDialog(BuildContext context, String text) async {
-    return await showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        TextEditingController controller = TextEditingController(text: text);
-        List<String> array = ['1', '2', '3', '4'];
-        List<String> filter = array;
-        return AlertDialog(
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                Text('Type'),
-                SizedBox(height: 10),
-                TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Divider(
-                  height: 4,
-                  color: Colors.black,
-                ),
-                SizedBox(
-                  height: 300,
-                  width: 300,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: filter.length,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                child: ListTile(
-                                  title: Text(filter[index]),
-                                  onTap: () => controller.text = filter[index],
-                                ),
-                              );
-                            }),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text('close'),
-              onPressed: () {
-                Navigator.of(context).pop(text);
-              },
-            ),
-            ElevatedButton(
-              child: Text('Add'),
-              onPressed: () {
-                Navigator.of(context).pop(controller.text);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  _TypeFieldWidget({Key? key, required this.operations}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final model = context.read<AddOperationModel>();
-    TextEditingController _controller = TextEditingController();
+    TextEditingController controller = TextEditingController();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Type *',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         TextField(
-          controller: _controller,
-          decoration: InputDecoration(
+          controller: controller,
+          decoration: const InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
             labelText: 'type of transaction',
           ),
           onTap: () async {
-            final String type =
-                await _addTypeDialog(context, _controller.text) ?? '';
+            final type = await model.addDialog(
+                  context: context,
+                  text: controller.text,
+                  operations: operations,
+                  type: OperationModelFormType.type,
+                ) ?? '';
             model.changeType(type);
-            _controller.text = type;
+            controller.text = type;
           },
           //onChanged: model.changeType,
           //onTap: () async => await _addTypeDialog(context),
@@ -216,28 +136,40 @@ class _TypeFieldWidgetState extends State<_TypeFieldWidget> {
 }
 
 class _FormFieldWidget extends StatelessWidget {
-  const _FormFieldWidget({Key? key}) : super(key: key);
+  List<Operation> operations;
+  _FormFieldWidget({Key? key, required this.operations}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final model = context.read<AddOperationModel>();
+    TextEditingController controller = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Form *',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         TextField(
-          decoration: InputDecoration(
+          controller: controller,
+          decoration: const InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
             labelText: 'Form',
           ),
-          onChanged: model.changeForm,
+          onTap: () async {
+            final form = await model.addDialog(
+              context: context,
+              text: controller.text,
+              operations: operations,
+              type: OperationModelFormType.form,
+            ) ?? '';
+            model.changeForm(form);
+            controller.text = form;
+          },
         ),
       ],
     );
@@ -253,15 +185,15 @@ class _SumFieldWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Sum *',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         TextField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             suffixIcon: Icon(Icons.money),
             border: OutlineInputBorder(),
             labelText: 'sum',
@@ -274,28 +206,40 @@ class _SumFieldWidget extends StatelessWidget {
 }
 
 class _NoteFieldWidget extends StatelessWidget {
-  const _NoteFieldWidget({Key? key}) : super(key: key);
+  List<Operation> operations;
+  _NoteFieldWidget({Key? key, required this.operations}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final model = context.read<AddOperationModel>();
+    TextEditingController controller = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Note',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         TextField(
-          decoration: InputDecoration(
+          controller: controller,
+          decoration: const InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
             labelText: 'note',
           ),
-          onChanged: model.changeNote,
+          onTap: () async {
+            final note = await model.addDialog(
+              context: context,
+              text: controller.text,
+              operations: operations,
+              type: OperationModelFormType.note,
+            ) ?? '';
+            model.changeNote(note);
+            controller.text = note;
+          },
         ),
       ],
     );

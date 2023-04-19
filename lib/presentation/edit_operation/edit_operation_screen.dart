@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/domain/entity/operation.dart';
-
 import 'edit_operation_model.dart';
 
 class EditOperationScreen extends StatelessWidget {
@@ -50,6 +47,7 @@ class EditOperationScreen extends StatelessWidget {
               const SizedBox(height: 10),
               _FormFieldWidget(
                 form: operation.form,
+                operations: operations,
               ),
               const SizedBox(height: 10),
               _SumFieldWidget(
@@ -58,6 +56,7 @@ class EditOperationScreen extends StatelessWidget {
               const SizedBox(height: 10),
               _NoteFieldWidget(
                 note: operation.note,
+                operations: operations,
               ),
             ],
           ),
@@ -82,24 +81,33 @@ class _DataFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.read<EditOperationModel>();
+    DateTime date = DateTime.now();
+    TextEditingController controller =
+        TextEditingController(text: date.toString());
+    model.changeDate(date.toString(), false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Date *',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        TextFormField(
-            initialValue: date,
-            decoration: InputDecoration(
-                suffixIcon: Icon(Icons.calendar_month),
-                border: OutlineInputBorder(),
-                labelText: 'date of operation',
-                helperText: date),
-            onChanged: model.changeDate),
+        TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            suffixIcon: Icon(Icons.calendar_month),
+            border: OutlineInputBorder(),
+            labelText: 'date of operation',
+          ),
+          onTap: () async {
+            date = await model.selectDate(context);
+            controller.text = date.toString();
+            model.changeDate(date.toString(), true);
+          },
+        ),
       ],
     );
   }
@@ -109,107 +117,42 @@ class _TypeFieldWidget extends StatelessWidget {
   final String type;
   final List<Operation> operations;
 
-  const _TypeFieldWidget({Key? key, required this.type, required this.operations}) : super(key: key);
-
-  Future<String?> _addTypeDialog(BuildContext context, String text) async {
-    return await showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        TextEditingController controller = TextEditingController(text: text);
-
-        List<String> array = [];
-        for (int i = 0; i < operations.length; i++) {
-          array.add(operations[i].type);
-        };
-        List<String> filter = array;
-
-        return AlertDialog(
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                Text('Type'),
-                SizedBox(height: 10),
-                TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Divider(
-                  height: 4,
-                  color: Colors.black,
-                ),
-                SizedBox(
-                  height: 300,
-                  width: 300,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: filter.length,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                child: ListTile(
-                                  title: Text(filter[index]),
-                                  onTap: () => controller.text = filter[index],
-                                ),
-                              );
-                            }),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text('close'),
-              onPressed: () {
-                Navigator.of(context).pop(text);
-              },
-            ),
-            ElevatedButton(
-              child: Text('Add'),
-              onPressed: () {
-                Navigator.of(context).pop(controller.text);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  const _TypeFieldWidget(
+      {Key? key, required this.type, required this.operations})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _controller = TextEditingController();
+    TextEditingController controller = TextEditingController(text: type);
     final model = context.read<EditOperationModel>();
+    model.changeType(type, false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Type *',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        TextFormField(
-          initialValue: type,
-          decoration: InputDecoration(
+        TextField(
+          controller: controller,
+          decoration: const InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
             labelText: 'type of transaction',
           ),
           onTap: () async {
-            final String type =
-                await _addTypeDialog(context, _controller.text) ?? '';
-            model.changeType(type);
-            _controller.text = type;
+            final type = await model.addDialog(
+                  context: context,
+                  text: controller.text,
+                  operations: operations,
+                  type: OperationModelFormType.type,
+                ) ??
+                '';
+            model.changeType(type, true);
+            controller.text = type;
           },
         ),
       ],
@@ -219,30 +162,44 @@ class _TypeFieldWidget extends StatelessWidget {
 
 class _FormFieldWidget extends StatelessWidget {
   String form;
+  final List<Operation> operations;
 
-  _FormFieldWidget({Key? key, required this.form}) : super(key: key);
+  _FormFieldWidget({Key? key, required this.form, required this.operations})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final model = context.read<EditOperationModel>();
+    TextEditingController controller = TextEditingController(text: form);
+    model.changeForm(form, false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Form *',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        TextFormField(
-          initialValue: form,
-          decoration: InputDecoration(
+        TextField(
+          controller: controller,
+          decoration: const InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
             labelText: 'Form',
           ),
-          onChanged: model.changeForm,
+          onTap: () async {
+            final form = await model.addDialog(
+                  context: context,
+                  text: controller.text,
+                  operations: operations,
+                  type: OperationModelFormType.form,
+                ) ??
+                '';
+            model.changeForm(form, true);
+            controller.text = form;
+          },
         ),
       ],
     );
@@ -257,24 +214,27 @@ class _SumFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.read<EditOperationModel>();
+    model.changeSum(sum.toString(), false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Sum *',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         TextFormField(
           initialValue: sum.toString(),
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             suffixIcon: Icon(Icons.money),
             border: OutlineInputBorder(),
             labelText: 'sum',
           ),
-          onChanged: model.changeSum,
+          onChanged: (value) {
+            model.changeSum(value, true);
+          },
         ),
       ],
     );
@@ -283,30 +243,45 @@ class _SumFieldWidget extends StatelessWidget {
 
 class _NoteFieldWidget extends StatelessWidget {
   final String note;
+  final List<Operation> operations;
 
-  const _NoteFieldWidget({Key? key, required this.note}) : super(key: key);
+  const _NoteFieldWidget(
+      {Key? key, required this.note, required this.operations})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final model = context.read<EditOperationModel>();
+    TextEditingController controller = TextEditingController(text: note);
+    model.changeForm(note, false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Note',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        TextFormField(
-          initialValue: note,
-          decoration: InputDecoration(
+        TextField(
+          controller: controller,
+          decoration: const InputDecoration(
             suffixIcon: Icon(Icons.add),
             border: OutlineInputBorder(),
             labelText: 'note',
           ),
-          onChanged: model.changeNote,
+          onTap: () async {
+            final note = await model.addDialog(
+                  context: context,
+                  text: controller.text,
+                  operations: operations,
+                  type: OperationModelFormType.note,
+                ) ??
+                '';
+            model.changeForm(note, true);
+            controller.text = note;
+          },
         ),
       ],
     );

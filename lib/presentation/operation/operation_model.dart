@@ -65,9 +65,21 @@ class OperationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  loadOperation() async {
+  loadOperation() {
     _state.operations = _hiveService.getOperation();
     notifyListeners();
+  }
+
+  Future<void> onAddOperationButtonPressed(BuildContext context, List<Operation> operations) async {
+    await Navigator.of(context).pushNamed('/addOperation', arguments: operations);
+    await loadOperation();
+  }
+
+  Future<void> onEditOperationButtonPressed({required BuildContext context, required int index}) async {
+    final arg = Argument(operations: state.operations, index: index);
+    await Navigator.of(context)
+        .pushNamed('/editOperation', arguments: arg);
+    await loadOperation();
   }
 
   Future<void> onDeleteButtonPressed(int index, int id) async {

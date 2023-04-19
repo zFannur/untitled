@@ -32,13 +32,21 @@ class HiveService {
     );
 
     localDataSourceHive
-        .addOperationHive(operation.operationToOperationModel(operation));
+        .addOperationHive(operation.operationToOperationModel(operation), localDataSourceHive.operationKey);
+    localDataSourceHive
+        .addOperationHive(operation.operationToOperationModel(operation), localDataSourceHive.operationSendKey);
   }
 
   List<Operation> getOperation() {
     List<Operation> operations = [];
-    operations = localDataSourceHive.getOperationLocal();
+    operations = localDataSourceHive.getOperationLocal(localDataSourceHive.operationKey);
     print(operations.isEmpty ? 'empty' : operations.last.id);
+    return operations;
+  }
+
+  List<Operation> getCache() {
+    List<Operation> operations = [];
+    operations = localDataSourceHive.getOperationLocal(localDataSourceHive.operationSendKey);
     return operations;
   }
 
@@ -72,7 +80,11 @@ class HiveService {
     localDataSourceHive.deleteAllHive();
   }
 
+  void deleteOperationCache(int index) {
+    localDataSourceHive.deleteOperationHive(index, localDataSourceHive.operationSendKey);
+  }
+
   void deleteOperation(int index) {
-    localDataSourceHive.deleteOperationHive(index);
+    localDataSourceHive.deleteOperationHive(index, localDataSourceHive.operationKey);
   }
 }

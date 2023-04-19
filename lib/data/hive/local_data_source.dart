@@ -5,6 +5,7 @@ import '../models/operation_model.dart';
 
 class LocalDataSourceHive {
   final operationKey = 'operation';
+  final operationSendKey = 'operationSendKey';
 
   Future<void> init() async {
     final applicationDocumentDir =
@@ -14,10 +15,11 @@ class LocalDataSourceHive {
       ..registerAdapter(OperationModelHiveAdapter());
 
     await Hive.openBox<OperationModelHive>(operationKey);
+    await Hive.openBox<OperationModelHive>(operationSendKey);
   }
 
-  void addOperationHive(OperationModelHive operationModelHive) {
-    Hive.box<OperationModelHive>(operationKey).add(operationModelHive);
+  void addOperationHive(OperationModelHive operationModelHive, String key) {
+    Hive.box<OperationModelHive>(key).add(operationModelHive);
   }
 
   void addListOperationHive(List<OperationModelHive> operationModelHive) {
@@ -40,16 +42,16 @@ class LocalDataSourceHive {
     return oldValue += 1;
   }
 
-  void deleteOperationHive(int index) {
-    Hive.box<OperationModelHive>(operationKey).deleteAt(index);
+  void deleteOperationHive(int index, String key) {
+    Hive.box<OperationModelHive>(key).deleteAt(index);
   }
 
   void deleteAllHive() {
     Hive.box<OperationModelHive>(operationKey).clear();
   }
 
-  List<OperationModelHive> getOperationLocal() {
-    final result = Hive.box<OperationModelHive>(operationKey).values.toList();
+  List<OperationModelHive> getOperationLocal(String key) {
+    final result = Hive.box<OperationModelHive>(key).values.toList();
     return result;
   }
 }

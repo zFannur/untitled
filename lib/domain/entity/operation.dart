@@ -82,3 +82,9 @@ class Argument {
 
   Argument({required this.operations, required this.index});
 }
+
+enum OperationModelFormType {
+  type,
+  form,
+  note,
+}
