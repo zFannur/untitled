@@ -94,12 +94,15 @@ class OperationModel extends ChangeNotifier {
   }
 
   loadOperation() async {
+    final result = await InternetConnectionChecker().hasConnection;
+    _state = _state.copyWith(internetStatus: result);
+
     List<Operation> cache = _hiveService.getCache();
     _state.operations = _hiveService.getOperation();
     _state = _state.copyWith(statusMessage: (cache.length).toString());
     notifyListeners();
 
-    if (cache.isNotEmpty) {
+    if (cache.isNotEmpty && _state.internetStatus) {
       _state = _state.copyWith(isSending: true);
       try {
         for (int i = cache.length - 1; i >= 0; i--) {

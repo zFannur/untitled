@@ -178,6 +178,7 @@ class AddOperationModel extends ChangeNotifier {
                 const Text('Type'),
                 const SizedBox(height: 10),
                 TextField(
+                  keyboardType: TextInputType.text,
                   controller: controller,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),

@@ -73,6 +73,7 @@ class _DataFieldWidget extends StatelessWidget {
           height: 10,
         ),
         TextField(
+          keyboardType: TextInputType.datetime,
           controller: controller,
           decoration: const InputDecoration(
             suffixIcon: Icon(Icons.calendar_month),
@@ -111,6 +112,7 @@ class _TypeFieldWidget extends StatelessWidget {
           height: 10,
         ),
         TextField(
+          keyboardType: TextInputType.text,
           controller: controller,
           decoration: const InputDecoration(
             suffixIcon: Icon(Icons.add),
@@ -154,6 +156,7 @@ class _FormFieldWidget extends StatelessWidget {
           height: 10,
         ),
         TextField(
+          keyboardType: TextInputType.text,
           controller: controller,
           decoration: const InputDecoration(
             suffixIcon: Icon(Icons.add),
@@ -193,6 +196,7 @@ class _SumFieldWidget extends StatelessWidget {
           height: 10,
         ),
         TextField(
+          keyboardType: TextInputType.number,
           decoration: const InputDecoration(
             suffixIcon: Icon(Icons.money),
             border: OutlineInputBorder(),
