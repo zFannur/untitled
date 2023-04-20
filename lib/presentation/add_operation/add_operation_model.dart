@@ -48,7 +48,7 @@ class AddOperationModel extends ChangeNotifier {
   void changeDate(String value, bool notifyListener) {
     if (_state.date == value) return;
     _state = _state.copyWith(date: DateTime.now().toString());
-    if(notifyListener) {
+    if (notifyListener) {
       notifyListeners();
     }
   }
@@ -85,7 +85,10 @@ class AddOperationModel extends ChangeNotifier {
     final sum = _state.sum;
     final note = _state.note;
 
-    if (date.isEmpty || type.isEmpty || form.isEmpty || sum.toString().isEmpty) {
+    if (date.isEmpty ||
+        type.isEmpty ||
+        form.isEmpty ||
+        sum.toString().isEmpty) {
       return;
     }
     try {
@@ -138,8 +141,9 @@ class AddOperationModel extends ChangeNotifier {
       builder: (BuildContext context) {
         TextEditingController controller = TextEditingController(text: text);
         List<String> filter = [];
+        List<String> filtered = [];
 
-        switch(type) {
+        switch (type) {
           case OperationModelFormType.type:
             var uniques = <String, bool>{};
             for (var s in operations) {
@@ -168,59 +172,105 @@ class AddOperationModel extends ChangeNotifier {
             }
             break;
         }
+        filtered = filter;
 
-        return AlertDialog(
-          content: SizedBox(
-            height: 500,
-            width: 300,
-            child: Column(
-              children: [
-                const Text('Type'),
-                const SizedBox(height: 10),
-                TextField(
-                  keyboardType: TextInputType.text,
-                  controller: controller,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Divider(
-                  height: 4,
-                  color: Colors.black,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: filter.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          child: ListTile(
-                            title: Text(filter[index]),
-                            onTap: () => Navigator.of(context).pop(filter[index]),
-                          ),
-                        );
-                      }),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: const Text('close'),
-              onPressed: () {
-                Navigator.of(context).pop(text);
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Add'),
-              onPressed: () {
-                Navigator.of(context).pop(controller.text);
-              },
-            ),
-          ],
+        return _AlertDialogWidget(
+          filter: filter,
+          operationsItems: filtered,
+          controller: controller,
+          text: text,
         );
       },
+    );
+  }
+}
+
+class _AlertDialogWidget extends StatefulWidget {
+  List<String> filter;
+  String text;
+  TextEditingController controller;
+  List<String> operationsItems;
+
+  _AlertDialogWidget({
+    Key? key,
+    required this.filter,
+    required this.operationsItems,
+    required this.controller,
+    required this.text,
+  }) : super(key: key);
+
+  @override
+  State<_AlertDialogWidget> createState() => _AlertDialogWidgetState();
+}
+
+class _AlertDialogWidgetState extends State<_AlertDialogWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: SizedBox(
+        height: 500,
+        width: 300,
+        child: Column(
+          children: [
+            const Text('Type'),
+            const SizedBox(height: 10),
+            TextField(
+              onChanged: (value) {
+                widget.filter.clear();
+                if (value.isEmpty) {
+                  widget.filter.addAll(widget.operationsItems);
+                } else {
+                  for (final item in widget.operationsItems) {
+                    if (item.toLowerCase().contains(value.toLowerCase())) {
+                      widget.filter.add(item);
+                    }
+                  }
+                }
+
+                setState(() {});
+              },
+              keyboardType: TextInputType.text,
+              controller: widget.controller,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Divider(
+              height: 4,
+              color: Colors.black,
+            ),
+            Expanded(
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: widget.filter.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(widget.filter[index]),
+                        onTap: () =>
+                            Navigator.of(context).pop(widget.filter[index]),
+                      ),
+                    );
+                  }),
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          child: const Text('close'),
+          onPressed: () {
+            Navigator.of(context).pop(widget.text);
+          },
+        ),
+        ElevatedButton(
+          child: const Text('Add'),
+          onPressed: () {
+            Navigator.of(context).pop(widget.controller.text);
+          },
+        ),
+      ],
     );
   }
 }
