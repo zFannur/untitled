@@ -100,10 +100,10 @@ class OperationModel extends ChangeNotifier {
     List<Operation> cache = _hiveService.getCache();
     _state.operations = _hiveService.getOperation();
     _state = _state.copyWith(statusMessage: (cache.length).toString());
+    if (cache.isNotEmpty) _state = _state.copyWith(isSending: true);
     notifyListeners();
 
     if (cache.isNotEmpty && _state.internetStatus) {
-      _state = _state.copyWith(isSending: true);
       try {
         for (int i = cache.length - 1; i >= 0; i--) {
           final status = await _operationService.sendOperation(
