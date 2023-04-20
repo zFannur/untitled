@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'operation_model.dart';
+//import 'package:async/async.dart';
 
 class OperationScreen extends StatelessWidget {
   const OperationScreen({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class OperationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<OperationModel>();
+    //final model = context.read<OperationModel>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Operations'),
@@ -27,6 +27,7 @@ class OperationScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          ShimmerButton(),
           if (context
               .select((OperationModel value) => value.state.operations)
               .isEmpty)
@@ -35,10 +36,98 @@ class OperationScreen extends StatelessWidget {
             const _ListOperationsWidget(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            model.onAddOperationButtonPressed(context, model.state.operations),
-        child: const Icon(Icons.add),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () =>
+      //       model.onAddOperationButtonPressed(context, model.state.operations),
+      //   child: const Icon(Icons.add),
+      // ),
+    );
+  }
+}
+
+class ShimmerButton extends StatefulWidget {
+  @override
+  _ShimmerButtonState createState() => _ShimmerButtonState();
+}
+
+class _ShimmerButtonState extends State<ShimmerButton>
+    with SingleTickerProviderStateMixin {
+  bool _isAnimating = false;
+  late AnimationController _animationController;
+  late Animation<Color?> _colorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+        duration: Duration(milliseconds: 1500), vsync: this);
+    _colorAnimation =
+        ColorTween(begin: Colors.red[400], end: Colors.blue[800])
+            .animate(CurvedAnimation(
+          parent: _animationController,
+          curve: Curves.easeInOut,
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.read<OperationModel>();
+    _animationController.repeat();
+    return MaterialButton(
+      onPressed: () {
+        model.onAddOperationButtonPressed(context, model.state.operations);
+        setState(() {
+          // _isAnimating = !_isAnimating; // Toggle the animation state
+          // if (_isAnimating) {
+          //    // Start the animation
+          // } else {
+          //   _animationController.stop(); // Stop the animation
+          // }
+        });
+      },
+      textColor: Colors.white,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: _colorAnimation,
+            builder: (context, child) => Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: _colorAnimation.value!.withOpacity(0.6),
+                    blurRadius: 16.0,
+                    spreadRadius: 1.0,
+                    offset: Offset(
+                      -4.0,
+                      -4.0,
+                    ),
+                  ),
+                ],
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    _colorAnimation.value!,
+                    _colorAnimation.value!.withOpacity(0.6),
+                  ],
+                ),
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16.0), bottomRight: Radius.circular(16.0)),
+              ),
+              height: 48.0,
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              'Add Operation',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18.0,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
