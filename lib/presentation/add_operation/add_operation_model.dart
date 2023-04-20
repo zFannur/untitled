@@ -151,6 +151,7 @@ class AddOperationModel extends ChangeNotifier {
             }
             for (var key in uniques.keys) {
               filter.add(key);
+              filtered.add(key);
             }
             break;
           case OperationModelFormType.form:
@@ -160,6 +161,7 @@ class AddOperationModel extends ChangeNotifier {
             }
             for (var key in uniques.keys) {
               filter.add(key);
+              filtered.add(key);
             }
             break;
           case OperationModelFormType.note:
@@ -169,10 +171,11 @@ class AddOperationModel extends ChangeNotifier {
             }
             for (var key in uniques.keys) {
               filter.add(key);
+              filtered.add(key);
             }
             break;
         }
-        filtered = filter;
+        //filtered = filter;
 
         return _AlertDialogWidget(
           filter: filter,
@@ -219,11 +222,10 @@ class _AlertDialogWidgetState extends State<_AlertDialogWidget> {
                 widget.filter.clear();
                 if (value.isEmpty) {
                   widget.filter.addAll(widget.operationsItems);
-                } else {
-                  for (final item in widget.operationsItems) {
-                    if (item.toLowerCase().contains(value.toLowerCase())) {
-                      widget.filter.add(item);
-                    }
+                }
+                for (final item in widget.operationsItems) {
+                  if (item.toLowerCase().contains(value.toLowerCase())) {
+                    widget.filter.add(item);
                   }
                 }
 
