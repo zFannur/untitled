@@ -44,7 +44,7 @@ class HiveService {
     List<Operation> operations = [];
     operations =
         localDataSourceHive.getOperationLocal(localDataSourceHive.operationKey);
-    print(operations.isEmpty ? 'empty' : operations.last.id);
+    print(operations.isEmpty ? 'getHiveBox: empty' : 'last operation id: ${operations.last.id}');
     return operations;
   }
 

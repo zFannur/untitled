@@ -19,7 +19,10 @@ class OperationScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Operations'),
-        leading: const _ActionAppBarWidget(),
+        leading: const _LeadingAppBarWidget(),
+        actions: const [
+          _AppBarActionWidget(),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -41,8 +44,19 @@ class OperationScreen extends StatelessWidget {
   }
 }
 
-class _ActionAppBarWidget extends StatelessWidget {
-  const _ActionAppBarWidget({Key? key}) : super(key: key);
+class _AppBarActionWidget extends StatelessWidget {
+  const _AppBarActionWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.watch<OperationModel>();
+    return model.state.internetStatus ? const Icon(Icons.signal_wifi_4_bar) : const Icon(Icons.signal_wifi_connected_no_internet_4_outlined);
+  }
+}
+
+
+class _LeadingAppBarWidget extends StatelessWidget {
+  const _LeadingAppBarWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

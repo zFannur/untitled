@@ -8,10 +8,14 @@ class ApiClient {
       "https://script.google.com/macros/s/AKfycbySJsChZ2hhhjSqc5V_MPdic2rSMzhBIqs1MFSHsOi_Gpxl5UKR_t-pIPHlZHSF1EQrhg/exec";
 
   Future<List<Operation>> getForm() async {
-    return await http.get(Uri.parse(uri)).then((response) {
-      var jsonForm = convert.jsonDecode(response.body) as List;
-      return jsonForm.map((json) => Operation.fromJson(json)).toList();
-    });
+    try{
+      return await http.get(Uri.parse(uri)).then((response) {
+        var jsonForm = convert.jsonDecode(response.body) as List;
+        return jsonForm.map((json) => Operation.fromJson(json)).toList();
+      });
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<String> postForm(Operation operation) async {

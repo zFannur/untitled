@@ -1,30 +1,33 @@
+import 'dart:async';
+
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:untitled/domain/service/hive_service.dart';
 import 'package:untitled/domain/service/operation_service.dart';
 import '../../domain/entity/operation.dart';
 
 class OperationModelState {
-  final bool canSubmit;
+  final bool internetStatus;
   final bool isSending;
   final String statusMessage;
   List<Operation> operations = [];
 
   OperationModelState({
-    required this.canSubmit,
+    required this.internetStatus,
     required this.isSending,
     required this.statusMessage,
     required this.operations,
   });
 
   OperationModelState copyWith({
+    bool? internetStatus,
     bool? canSubmit,
     bool? isSending,
     String? statusMessage,
     List<Operation>? operations,
   }) {
     return OperationModelState(
-      canSubmit: canSubmit ?? this.canSubmit,
+      internetStatus: internetStatus ?? this.internetStatus,
       isSending: isSending ?? this.isSending,
       statusMessage: statusMessage ?? this.statusMessage,
       operations: operations ?? this.operations,
@@ -36,7 +39,7 @@ class OperationModel extends ChangeNotifier {
   final HiveService _hiveService = HiveService();
   final _operationService = OperationService();
   var _state = OperationModelState(
-    canSubmit: true,
+    internetStatus: false,
     isSending: false,
     statusMessage: '',
     operations: [],
@@ -52,11 +55,20 @@ class OperationModel extends ChangeNotifier {
     List<Operation> local = [];
     List<Operation> sheet = [];
 
-    sheet = await _operationService.getOperation();
-    local = _hiveService.getOperation();
+    try{
+      local = _hiveService.getOperation();
+      final result = await InternetConnectionChecker().hasConnection;
+      _state = _state.copyWith(internetStatus: result);
+      print('intersetStatus: $result');
 
-    if (listEquals(local, sheet)) {
-      /*#TODO:сравнение_не_работает_в_будущем_сделать_чтобы_работало*/
+      if (_state.internetStatus) sheet = await _operationService.getOperation();
+    } catch (e) {
+      print(e);
+    }
+
+
+    if (local.length == sheet.length || sheet.isEmpty) {
+      // #TODO:сравнение_не_работает_в_будущем_сделать_чтобы_работало
       _state.operations = _hiveService.getOperation();
     } else {
       _hiveService.deleteAll();
@@ -67,11 +79,17 @@ class OperationModel extends ChangeNotifier {
   }
 
   void reloadOperationInSheet() async {
-    _state.operations.clear();
-    _hiveService.deleteAll();
+    final result = await InternetConnectionChecker().hasConnection;
+    _state = _state.copyWith(internetStatus: result);
+
     notifyListeners();
-    _state.operations = await _operationService.getOperation();
-    _hiveService.addList(_state.operations);
+    if (_state.internetStatus) {
+      _state.operations.clear();
+      _hiveService.deleteAll();
+      _state.operations = await _operationService.getOperation();
+      _hiveService.addList(_state.operations);
+    }
+
     notifyListeners();
   }
 
@@ -102,7 +120,9 @@ class OperationModel extends ChangeNotifier {
             notifyListeners();
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        print(e);
+      }
     }
     notifyListeners();
   }
