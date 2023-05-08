@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
-import 'domain/service/hive_service.dart';
+import 'package:untitled/domain/repository/hive_repository.dart';
 import 'internal/application.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HiveService hiveService = HiveService();
+  HiveRepository hiveService = HiveRepository();
   await hiveService.initHive();
   runApp(const MyApp());
 }

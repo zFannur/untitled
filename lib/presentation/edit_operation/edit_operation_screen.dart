@@ -145,12 +145,11 @@ class _TypeFieldWidget extends StatelessWidget {
           ),
           onTap: () async {
             final type = await model.addDialog(
-                  context: context,
-                  text: controller.text,
-                  operations: operations,
-                  type: OperationModelFormType.type,
-                ) ??
-                '';
+              context: context,
+              text: controller.text,
+              operations: operations,
+              type: OperationModelFormType.type,
+            ) ?? '';
             model.changeType(type, true);
             controller.text = type;
           },
@@ -191,12 +190,11 @@ class _FormFieldWidget extends StatelessWidget {
           ),
           onTap: () async {
             final form = await model.addDialog(
-                  context: context,
-                  text: controller.text,
-                  operations: operations,
-                  type: OperationModelFormType.form,
-                ) ??
-                '';
+              context: context,
+              text: controller.text,
+              operations: operations,
+              type: OperationModelFormType.form,
+            ) ?? '';
             model.changeForm(form, true);
             controller.text = form;
           },
@@ -226,6 +224,7 @@ class _SumFieldWidget extends StatelessWidget {
           height: 10,
         ),
         TextFormField(
+          keyboardType: TextInputType.number,
           initialValue: sum.toString(),
           decoration: const InputDecoration(
             suffixIcon: Icon(Icons.money),
@@ -273,12 +272,11 @@ class _NoteFieldWidget extends StatelessWidget {
           ),
           onTap: () async {
             final note = await model.addDialog(
-                  context: context,
-                  text: controller.text,
-                  operations: operations,
-                  type: OperationModelFormType.note,
-                ) ??
-                '';
+              context: context,
+              text: controller.text,
+              operations: operations,
+              type: OperationModelFormType.note,
+            ) ?? '';
             model.changeForm(note, true);
             controller.text = note;
           },

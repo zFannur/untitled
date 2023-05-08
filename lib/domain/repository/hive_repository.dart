@@ -2,7 +2,7 @@ import 'package:untitled/domain/entity/operation.dart';
 
 import '../../data/hive/local_data_source.dart';
 
-class HiveService {
+class HiveRepository {
   LocalDataSourceHive localDataSourceHive = LocalDataSourceHive();
 
   Future<void> initHive() async {
@@ -10,8 +10,7 @@ class HiveService {
   }
 
   void addList(List<Operation> operation) {
-    localDataSourceHive.addListOperationHive(
-        operation.map((e) => e.operationToOperationModel(e)).toList());
+    localDataSourceHive.addListOperationHive(operation);
   }
 
   void addOperation({
@@ -33,18 +32,18 @@ class HiveService {
     );
 
     localDataSourceHive.addOperationHive(
-        operation.operationToOperationModel(operation),
-        localDataSourceHive.operationKey);
+        operation, localDataSourceHive.operationKey);
     localDataSourceHive.addOperationHive(
-        operation.operationToOperationModel(operation),
-        localDataSourceHive.operationSendKey);
+        operation, localDataSourceHive.operationSendKey);
   }
 
   List<Operation> getOperation() {
     List<Operation> operations = [];
     operations =
         localDataSourceHive.getOperationLocal(localDataSourceHive.operationKey);
-    print(operations.isEmpty ? 'getHiveBox: empty' : 'last operation id: ${operations.last.id}');
+    print(operations.isEmpty
+        ? 'getHiveBox: empty'
+        : 'last operation id: ${operations.last.id}');
     return operations;
   }
 
@@ -74,11 +73,9 @@ class HiveService {
       id: id,
     );
 
-    localDataSourceHive.editOperationHive(
-        index, operation.operationToOperationModel(operation));
+    localDataSourceHive.editOperationHive(index, operation);
     localDataSourceHive.addOperationHive(
-        operation.operationToOperationModel(operation),
-        localDataSourceHive.operationSendKey);
+        operation, localDataSourceHive.operationSendKey);
   }
 
   int getNewId() {
@@ -112,8 +109,7 @@ class HiveService {
           index, localDataSourceHive.operationKey);
 
       localDataSourceHive.addOperationHive(
-          operation.operationToOperationModel(operation),
-          localDataSourceHive.operationSendKey);
+          operation, localDataSourceHive.operationSendKey);
     }
   }
 }

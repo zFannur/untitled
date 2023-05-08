@@ -1,7 +1,7 @@
 import 'package:untitled/data/api/api_client.dart';
 import 'package:untitled/domain/entity/operation.dart';
 
-class OperationService {
+class ApiRepository {
   final _apiClient = ApiClient();
 
   Future<List<Operation>> getOperation() async {

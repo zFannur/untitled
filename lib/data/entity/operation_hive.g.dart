@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'operation_model.dart';
+part of 'operation_hive.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class OperationModelHiveAdapter extends TypeAdapter<OperationModelHive> {
+class OperationModelHiveAdapter extends TypeAdapter<OperationHive> {
   @override
   final int typeId = 0;
 
   @override
-  OperationModelHive read(BinaryReader reader) {
+  OperationHive read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return OperationModelHive(
+    return OperationHive(
       id: fields[0] as int,
       action: fields[1] as String,
       date: fields[2] as String,
@@ -28,7 +28,7 @@ class OperationModelHiveAdapter extends TypeAdapter<OperationModelHive> {
   }
 
   @override
-  void write(BinaryWriter writer, OperationModelHive obj) {
+  void write(BinaryWriter writer, OperationHive obj) {
     writer
       ..writeByte(7)
       ..writeByte(0)

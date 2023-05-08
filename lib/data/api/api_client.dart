@@ -1,7 +1,12 @@
 
+import 'package:untitled/data/entity/converter.dart';
+import 'package:untitled/data/entity/operation_api.dart';
+
 import '../../domain/entity/operation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+
+//сделать обработку ошибок
 
 class ApiClient {
   static const uri =
@@ -11,7 +16,7 @@ class ApiClient {
     try{
       return await http.get(Uri.parse(uri)).then((response) {
         var jsonForm = convert.jsonDecode(response.body) as List;
-        return jsonForm.map((json) => Operation.fromJson(json)).toList();
+        return ConvertOperation.operationApiToOperationList(jsonForm.map((json) => OperationApi.fromJson(json)).toList());
       });
     } catch (e) {
       rethrow;
@@ -19,11 +24,12 @@ class ApiClient {
   }
 
   Future<String> postForm(Operation operation) async {
+    final operationApi = ConvertOperation.operationToOperationApi(operation);
     String message = '';
     try {
       final url = Uri.parse(uri);
 
-      var json = operation.toJson();
+      var json = operationApi.toJson();
 
       await http.post(url, body: json).then((response) async {
         if (response.statusCode == 302) {

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../domain/entity/operation.dart';
 import 'operation_model.dart';
-//import 'package:async/async.dart';
 
 class OperationScreen extends StatelessWidget {
   const OperationScreen({Key? key}) : super(key: key);
@@ -28,7 +26,7 @@ class OperationScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ShimmerButton(),
+          const ShimmerButton(),
           if (context
               .select((OperationModel value) => value.state.operations)
               .isEmpty)
@@ -47,13 +45,14 @@ class OperationScreen extends StatelessWidget {
 }
 
 class ShimmerButton extends StatefulWidget {
+  const ShimmerButton({super.key});
+
   @override
-  _ShimmerButtonState createState() => _ShimmerButtonState();
+  ShimmerButtonState createState() => ShimmerButtonState();
 }
 
-class _ShimmerButtonState extends State<ShimmerButton>
+class ShimmerButtonState extends State<ShimmerButton>
     with SingleTickerProviderStateMixin {
-  bool _isAnimating = false;
   late AnimationController _animationController;
   late Animation<Color?> _colorAnimation;
 
@@ -61,7 +60,7 @@ class _ShimmerButtonState extends State<ShimmerButton>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-        duration: Duration(milliseconds: 1500), vsync: this);
+        duration: const Duration(milliseconds: 1500), vsync: this);
     _colorAnimation =
         ColorTween(begin: Colors.red[400], end: Colors.blue[800])
             .animate(CurvedAnimation(
@@ -100,7 +99,7 @@ class _ShimmerButtonState extends State<ShimmerButton>
                         color: _colorAnimation.value!.withOpacity(0.6),
                         blurRadius: 16.0,
                         spreadRadius: 1.0,
-                        offset: Offset(
+                        offset: const Offset(
                           -4.0,
                           -4.0,
                         ),
@@ -114,7 +113,7 @@ class _ShimmerButtonState extends State<ShimmerButton>
                         _colorAnimation.value!.withOpacity(0.6),
                       ],
                     ),
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(16.0),
                         bottomRight: Radius.circular(16.0)),
                   ),
@@ -123,7 +122,7 @@ class _ShimmerButtonState extends State<ShimmerButton>
           ),
           Container(
             alignment: Alignment.center,
-            child: Text(
+            child: const Text(
               'Add Operation',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -144,7 +143,7 @@ class _AppBarActionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<OperationModel>();
     return model.state.internetStatus
-        ? const Icon(Icons.signal_wifi_4_bar)
+        ? const Text('')
         : const Icon(Icons.signal_wifi_connected_no_internet_4_outlined);
   }
 }

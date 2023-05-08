@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/domain/repository/hive_repository.dart';
 
 import '../../domain/entity/operation.dart';
-import '../../domain/service/hive_service.dart';
-import '../../domain/service/operation_service.dart';
 
 class EditOperationModelState {
   final String date;
@@ -37,8 +36,7 @@ class EditOperationModelState {
 }
 
 class EditOperationModel extends ChangeNotifier {
-  HiveService hiveService = HiveService();
-  final _operationService = OperationService();
+  HiveRepository hiveService = HiveRepository();
   var _state = EditOperationModelState(
     date: '',
     type: '',
@@ -161,8 +159,9 @@ class EditOperationModel extends ChangeNotifier {
       builder: (BuildContext context) {
         TextEditingController controller = TextEditingController(text: text);
         List<String> filter = [];
+        List<String> filtered = [];
 
-        switch(type) {
+        switch (type) {
           case OperationModelFormType.type:
             var uniques = <String, bool>{};
             for (var s in operations) {
@@ -170,6 +169,7 @@ class EditOperationModel extends ChangeNotifier {
             }
             for (var key in uniques.keys) {
               filter.add(key);
+              filtered.add(key);
             }
             break;
           case OperationModelFormType.form:
@@ -179,6 +179,7 @@ class EditOperationModel extends ChangeNotifier {
             }
             for (var key in uniques.keys) {
               filter.add(key);
+              filtered.add(key);
             }
             break;
           case OperationModelFormType.note:
@@ -188,61 +189,109 @@ class EditOperationModel extends ChangeNotifier {
             }
             for (var key in uniques.keys) {
               filter.add(key);
+              filtered.add(key);
             }
             break;
         }
+        //filtered = filter;
 
-        return AlertDialog(
-          content: SizedBox(
-            height: 500,
-            width: 300,
-            child: Column(
-              children: [
-                const Text('Type'),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: controller,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Divider(
-                  height: 4,
-                  color: Colors.black,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: filter.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          child: ListTile(
-                            title: Text(filter[index]),
-                            onTap: () => Navigator.of(context).pop(filter[index]),
-                          ),
-                        );
-                      }),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: const Text('close'),
-              onPressed: () {
-                Navigator.of(context).pop(text);
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Add'),
-              onPressed: () {
-                Navigator.of(context).pop(controller.text);
-              },
-            ),
-          ],
+        return _AlertDialogWidget(
+          filter: filter,
+          operationsItems: filtered,
+          controller: controller,
+          text: text,
         );
       },
+    );
+  }
+}
+
+class _AlertDialogWidget extends StatefulWidget {
+  List<String> filter;
+  String text;
+  TextEditingController controller;
+  List<String> operationsItems;
+
+  _AlertDialogWidget({
+    Key? key,
+    required this.filter,
+    required this.operationsItems,
+    required this.controller,
+    required this.text,
+  }) : super(key: key);
+
+  @override
+  State<_AlertDialogWidget> createState() => _AlertDialogWidgetState();
+}
+
+class _AlertDialogWidgetState extends State<_AlertDialogWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: SizedBox(
+        height: 500,
+        width: 300,
+        child: Column(
+          children: [
+            const Text('Type'),
+            const SizedBox(height: 10),
+            TextField(
+              onChanged: (value) {
+                widget.filter.clear();
+                if (value.isEmpty) {
+                  widget.filter.clear();
+                  widget.filter.addAll(widget.operationsItems);
+                }
+                for (final item in widget.operationsItems) {
+                  if (item.toLowerCase().contains(value.toLowerCase())) {
+                    widget.filter.add(item);
+                  }
+                }
+
+                setState(() {});
+              },
+              keyboardType: TextInputType.text,
+              controller: widget.controller,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Divider(
+              height: 4,
+              color: Colors.black,
+            ),
+            Expanded(
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: widget.filter.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(widget.filter[index]),
+                        onTap: () =>
+                            Navigator.of(context).pop(widget.filter[index]),
+                      ),
+                    );
+                  }),
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          child: const Text('close'),
+          onPressed: () {
+            Navigator.of(context).pop(widget.text);
+          },
+        ),
+        ElevatedButton(
+          child: const Text('Add'),
+          onPressed: () {
+            Navigator.of(context).pop(widget.controller.text);
+          },
+        ),
+      ],
     );
   }
 }

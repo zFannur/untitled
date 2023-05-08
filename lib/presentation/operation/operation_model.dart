@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:untitled/domain/service/hive_service.dart';
-import 'package:untitled/domain/service/operation_service.dart';
+import 'package:untitled/domain/repository/api_repository.dart';
 import '../../domain/entity/operation.dart';
+import '../../domain/repository/hive_repository.dart';
 
 class OperationModelState {
   final bool internetStatus;
@@ -36,8 +36,8 @@ class OperationModelState {
 }
 
 class OperationModel extends ChangeNotifier {
-  final HiveService _hiveService = HiveService();
-  final _operationService = OperationService();
+  final HiveRepository _hiveService = HiveRepository();
+  final _operationService = ApiRepository();
   var _state = OperationModelState(
     internetStatus: false,
     isSending: false,
@@ -55,7 +55,7 @@ class OperationModel extends ChangeNotifier {
     List<Operation> local = [];
     List<Operation> sheet = [];
 
-    try{
+    try {
       local = _hiveService.getOperation();
       final result = await InternetConnectionChecker().hasConnection;
       _state = _state.copyWith(internetStatus: result);
@@ -65,7 +65,6 @@ class OperationModel extends ChangeNotifier {
     } catch (e) {
       print(e);
     }
-
 
     if (local.length == sheet.length || sheet.isEmpty) {
       // #TODO:сравнение_не_работает_в_будущем_сделать_чтобы_работало
@@ -93,41 +92,48 @@ class OperationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  loadOperation() async {
+  Future<void> loadOperation() async {
     final result = await InternetConnectionChecker().hasConnection;
     _state = _state.copyWith(internetStatus: result);
 
     List<Operation> cache = _hiveService.getCache();
     _state.operations = _hiveService.getOperation();
     _state = _state.copyWith(statusMessage: (cache.length).toString());
-    if (cache.isNotEmpty) _state = _state.copyWith(isSending: true);
     notifyListeners();
+    if (!_state.isSending) {
+      if (cache.isNotEmpty) _state = _state.copyWith(isSending: true);
+      notifyListeners();
 
-    if (cache.isNotEmpty && _state.internetStatus) {
-      try {
-        for (int i = cache.length - 1; i >= 0; i--) {
-          final status = await _operationService.sendOperation(
-            action: cache[i].action,
-            id: cache[i].id,
-            date: cache[i].date,
-            type: cache[i].type,
-            form: cache[i].form,
-            sum: cache[i].sum,
-            note: cache[i].note,
-          );
-          print('sendOperationAction: ${cache[i].action} , status: $status');
-          if (status == 'SUCCESS') {
-            if(i == 0) _state = _state.copyWith(isSending: false);
-            _state = _state.copyWith(statusMessage: i.toString());
-            _hiveService.deleteOperationCache(i);
-            notifyListeners();
+      if (cache.isNotEmpty && _state.internetStatus) {
+        try {
+          for (int i = cache.length - 1; i >= 0; i--) {
+            await _operationService
+                .sendOperation(
+              action: cache[i].action,
+              id: cache[i].id,
+              date: cache[i].date,
+              type: cache[i].type,
+              form: cache[i].form,
+              sum: cache[i].sum,
+              note: cache[i].note,
+            )
+                .then((value) {
+              print('sendOperationAction: ${cache[i].action} , status: ${value
+                  .characters.string}');
+              if (value.characters.string == 'SUCCESS') {
+                _state = _state.copyWith(statusMessage: i.toString());
+                _hiveService.deleteOperationCache(i);
+                notifyListeners();
+              }
+            });
           }
+          _state = _state.copyWith(isSending: false);
+        } catch (e) {
+          print(e);
         }
-      } catch (e) {
-        print(e);
       }
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   Future<void> onAddOperationButtonPressed(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/domain/repository/hive_repository.dart';
 
 import '../../domain/entity/operation.dart';
-import '../../domain/service/hive_service.dart';
 
 class AddOperationModelState {
   final String date;
@@ -36,7 +36,7 @@ class AddOperationModelState {
 }
 
 class AddOperationModel extends ChangeNotifier {
-  HiveService hiveService = HiveService();
+  HiveRepository hiveService = HiveRepository();
   var _state = AddOperationModelState(
     date: '',
     type: '',
@@ -221,6 +221,7 @@ class _AlertDialogWidgetState extends State<_AlertDialogWidget> {
               onChanged: (value) {
                 widget.filter.clear();
                 if (value.isEmpty) {
+                  widget.filter.clear();
                   widget.filter.addAll(widget.operationsItems);
                 }
                 for (final item in widget.operationsItems) {
