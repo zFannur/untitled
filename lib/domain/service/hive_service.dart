@@ -2,7 +2,7 @@ import 'package:untitled/domain/entity/operation.dart';
 
 import '../../data/hive/local_data_source.dart';
 
-class HiveRepository {
+class HiveService {
   LocalDataSourceHive localDataSourceHive = LocalDataSourceHive();
 
   Future<void> initHive() async {

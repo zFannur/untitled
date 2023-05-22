@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/domain/entity/operation.dart';
 import 'package:untitled/presentation/add_operation/add_operation_model.dart';
@@ -17,7 +18,8 @@ class AddOperationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final operations =
         ModalRoute.of(context)!.settings.arguments as List<Operation>;
-    final model = context.read<AddOperationModel>();
+    final model = GetIt.instance<AddOperationModel>();
+    //final model = context.read<AddOperationModel>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add operation'),
@@ -56,7 +58,8 @@ class _DataFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    //final model = context.read<AddOperationModel>();
+    final model = GetIt.instance<AddOperationModel>();
     DateTime date = DateTime.now();
     TextEditingController controller =
         TextEditingController(text: date.toString());
@@ -98,7 +101,8 @@ class _TypeFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    //final model = context.read<AddOperationModel>();
+    final model = GetIt.instance<AddOperationModel>();
     TextEditingController controller = TextEditingController();
 
     return Column(
@@ -143,7 +147,8 @@ class _FormFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    //final model = context.read<AddOperationModel>();
+    final model = GetIt.instance<AddOperationModel>();
     TextEditingController controller = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +189,8 @@ class _SumFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    //final model = context.read<AddOperationModel>();
+    final model = GetIt.instance<AddOperationModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -215,7 +221,8 @@ class _NoteFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<AddOperationModel>();
+    //final model = context.read<AddOperationModel>();
+    final model = GetIt.instance<AddOperationModel>();
     TextEditingController controller = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

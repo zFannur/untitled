@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:untitled/domain/repository/api_repository.dart';
+import 'package:untitled/presentation/navigation/navigation.dart';
 import '../../domain/entity/operation.dart';
-import '../../domain/repository/hive_repository.dart';
+import '../../domain/service/api_service.dart';
+import '../../domain/service/hive_service.dart';
 
 class OperationModelState {
   final bool internetStatus;
@@ -36,8 +37,8 @@ class OperationModelState {
 }
 
 class OperationModel extends ChangeNotifier {
-  final HiveRepository _hiveService = HiveRepository();
-  final _operationService = ApiRepository();
+  final HiveService _hiveService = HiveService();
+  final _operationService = ApiService();
   var _state = OperationModelState(
     internetStatus: false,
     isSending: false,
@@ -51,7 +52,7 @@ class OperationModel extends ChangeNotifier {
     init();
   }
 
-  init() async {
+  Future<void> init() async {
     List<Operation> local = [];
     List<Operation> sheet = [];
 
@@ -67,7 +68,7 @@ class OperationModel extends ChangeNotifier {
     }
 
     if (local.length == sheet.length || sheet.isEmpty) {
-      // #TODO:сравнение_не_работает_в_будущем_сделать_чтобы_работало
+      // TODO: сравнение не работает в будущем сделать чтобы работало
       _state.operations = _hiveService.getOperation();
     } else {
       _hiveService.deleteAll();
@@ -139,14 +140,14 @@ class OperationModel extends ChangeNotifier {
   Future<void> onAddOperationButtonPressed(
       BuildContext context, List<Operation> operations) async {
     await Navigator.of(context)
-        .pushNamed('/addOperation', arguments: operations);
+        .pushNamed(RouteNames.addOperation, arguments: operations);
     await loadOperation();
   }
 
   Future<void> onEditOperationButtonPressed(
       {required BuildContext context, required int index}) async {
     final arg = Argument(operations: state.operations, index: index);
-    await Navigator.of(context).pushNamed('/editOperation', arguments: arg);
+    await Navigator.of(context).pushNamed(RouteNames.editOperation, arguments: arg);
     await loadOperation();
   }
 

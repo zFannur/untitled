@@ -1,6 +1,5 @@
-
-import 'package:untitled/data/entity/converter.dart';
-import 'package:untitled/data/entity/operation_api.dart';
+import 'package:untitled/data/models/converter.dart';
+import 'package:untitled/data/models/operation_api.dart';
 
 import '../../domain/entity/operation.dart';
 import 'package:http/http.dart' as http;

@@ -1,4 +1,4 @@
-import 'package:untitled/data/entity/operation_api.dart';
+import 'package:untitled/data/models/operation_api.dart';
 import '../../domain/entity/operation.dart';
 import 'operation_hive.dart';
 

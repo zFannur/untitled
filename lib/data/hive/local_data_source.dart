@@ -1,9 +1,8 @@
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:untitled/domain/entity/operation.dart';
-
-import '../entity/converter.dart';
-import '../entity/operation_hive.dart';
+import '../models/converter.dart';
+import '../models/operation_hive.dart';
 
 class LocalDataSourceHive {
   final operationKey = 'operation';

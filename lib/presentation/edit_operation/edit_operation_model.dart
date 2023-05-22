@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/domain/repository/hive_repository.dart';
 
 import '../../domain/entity/operation.dart';
+import '../../domain/service/hive_service.dart';
 
 class EditOperationModelState {
   final String date;
@@ -36,7 +36,7 @@ class EditOperationModelState {
 }
 
 class EditOperationModel extends ChangeNotifier {
-  HiveRepository hiveService = HiveRepository();
+  HiveService hiveService = HiveService();
   var _state = EditOperationModelState(
     date: '',
     type: '',
