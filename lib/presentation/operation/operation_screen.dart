@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'operation_model.dart';
 
@@ -20,10 +20,10 @@ class OperationScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
+          children: [
             _LeadingAppBarWidget(),
             _AppBarActionWidget(),
           ],
@@ -218,6 +218,8 @@ class _ListOperationsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<OperationModel>();
+    DateFormat dateFormat = DateFormat("dd.MM.yyyy kk:mm:ss");
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -225,14 +227,18 @@ class _ListOperationsWidget extends StatelessWidget {
             itemCount: model.state.operations.length,
             itemBuilder: (context, index) {
               final operation = model.state.operations[index];
+              DateTime dateTime = dateFormat.parse(operation.date);
+
               return Card(
                   child: Row(
                 children: [
                   SizedBox(
                       width: 65,
                       child: Center(
-                        child: Text(
-                            '${DateTime.parse(operation.date).day}:${DateTime.parse(operation.date).month}:${DateTime.parse(operation.date).year}'),
+                        child: Text('${dateTime.day}:${dateTime.month}'
+                          //operation.date,
+                            //'${DateTime.parse(operation.date).day}:${DateTime.parse(operation.date).month}:${DateTime.parse(operation.date).year}',
+                            ),
                       )),
                   Expanded(
                     flex: 2,

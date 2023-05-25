@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../domain/entity/operation.dart';
 import '../../domain/service/hive_service.dart';
@@ -61,7 +62,9 @@ class EditOperationModel extends ChangeNotifier {
 
   void changeDate(String value, bool notifyListener) {
     if (_state.date == value) return;
-    _state = _state.copyWith(date: DateTime.now().toString());
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss').format(now);
+    _state = _state.copyWith(date: formattedDate.toString());
     if (notifyListener){
       notifyListeners();
     }
@@ -207,12 +210,12 @@ class EditOperationModel extends ChangeNotifier {
 }
 
 class _AlertDialogWidget extends StatefulWidget {
-  List<String> filter;
-  String text;
-  TextEditingController controller;
-  List<String> operationsItems;
+  final List<String> filter;
+  final String text;
+  final TextEditingController controller;
+  final List<String> operationsItems;
 
-  _AlertDialogWidget({
+  const _AlertDialogWidget({
     Key? key,
     required this.filter,
     required this.operationsItems,
