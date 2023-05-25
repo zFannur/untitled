@@ -47,10 +47,10 @@ class AddOperationModel extends ChangeNotifier {
     note: '',
   );
 
-  void changeDate(String value, bool notifyListener) {
-    if (_state.date == value) return;
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss').format(now);
+  void changeDate(DateTime dateTime, bool notifyListener) {
+    if (_state.date == dateTime) return;
+    //DateTime now = DateTime.now();
+    String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss').format(dateTime);
     _state = _state.copyWith(date: formattedDate.toString());
     if (notifyListener) {
       notifyListeners();
@@ -124,13 +124,13 @@ class AddOperationModel extends ChangeNotifier {
     final selected = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2030),
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2100),
     );
     if (selected != null && selected != selectedDate) {
       selectedDate = selected;
     }
-    return selectedDate;
+    return selectedDate.copyWith(hour: 12, minute: 12, second: 12);
   }
 
   Future<String?> addDialog({
