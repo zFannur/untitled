@@ -63,7 +63,7 @@ class _DataFieldWidget extends StatelessWidget {
     DateTime date = DateTime.now();
     TextEditingController controller =
         TextEditingController(text: date.toString());
-    model.changeDate(date.toString(), false);
+    model.changeDate(date, false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +86,7 @@ class _DataFieldWidget extends StatelessWidget {
           onTap: () async {
             date = await model.selectDate(context);
             controller.text = date.toString();
-            model.changeDate(date.toString(), true);
+            model.changeDate(date, true);
           },
         ),
       ],
@@ -95,9 +95,9 @@ class _DataFieldWidget extends StatelessWidget {
 }
 
 class _TypeFieldWidget extends StatelessWidget {
-  List<Operation> operations;
+  final List<Operation> operations;
 
-  _TypeFieldWidget({Key? key, required this.operations}) : super(key: key);
+  const _TypeFieldWidget({Key? key, required this.operations}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -142,8 +142,8 @@ class _TypeFieldWidget extends StatelessWidget {
 }
 
 class _FormFieldWidget extends StatelessWidget {
-  List<Operation> operations;
-  _FormFieldWidget({Key? key, required this.operations}) : super(key: key);
+  final List<Operation> operations;
+  const _FormFieldWidget({Key? key, required this.operations}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -216,8 +216,8 @@ class _SumFieldWidget extends StatelessWidget {
 }
 
 class _NoteFieldWidget extends StatelessWidget {
-  List<Operation> operations;
-  _NoteFieldWidget({Key? key, required this.operations}) : super(key: key);
+  final List<Operation> operations;
+  const _NoteFieldWidget({Key? key, required this.operations}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

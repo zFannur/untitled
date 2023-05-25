@@ -60,11 +60,10 @@ class EditOperationModel extends ChangeNotifier {
     _state = _state.copyWith(note: note);
   }
 
-  void changeDate(String value, bool notifyListener) {
-    if (_state.date == value) return;
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss').format(now);
-    _state = _state.copyWith(date: formattedDate.toString());
+  void changeDate(DateTime dateTime, bool notifyListener) {
+    if (_state.date == dateTime) return;
+    String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss').format(dateTime);
+    _state = _state.copyWith(date: formattedDate);
     if (notifyListener){
       notifyListeners();
     }
@@ -147,7 +146,7 @@ class EditOperationModel extends ChangeNotifier {
     if (selected != null && selected != selectedDate) {
       selectedDate = selected;
     }
-    return selectedDate;
+    return selectedDate.copyWith(hour: 12, minute: 12, second: 12);;
   }
 
   Future<String?> addDialog({

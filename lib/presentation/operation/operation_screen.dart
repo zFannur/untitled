@@ -75,8 +75,8 @@ class ShimmerButtonState extends State<ShimmerButton>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-        duration: const Duration(milliseconds: 1500), vsync: this);
-    _colorAnimation = ColorTween(begin: Colors.red[400], end: Colors.blue[800])
+        duration: const Duration(seconds: 5), vsync: this);
+    _colorAnimation = ColorTween(begin: Colors.lightGreen[100], end: Colors.lightGreen)
         .animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
@@ -87,7 +87,9 @@ class ShimmerButtonState extends State<ShimmerButton>
   Widget build(BuildContext context) {
     final model = context.read<OperationModel>();
     //final model = GetIt.instance<OperationModel>();
-    _animationController.repeat();
+    _animationController.repeat(
+      reverse: true,
+    );
     return MaterialButton(
       onPressed: () {
         model.onAddOperationButtonPressed(context, model.state.operations);
