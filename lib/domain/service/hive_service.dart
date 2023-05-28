@@ -2,8 +2,22 @@ import 'package:untitled/domain/entity/operation.dart';
 
 import '../../data/hive/local_data_source.dart';
 
+abstract class LocalDataSourceHive {
+  String get operationKey;
+  String get operationSendKey;
+
+  Future<void> init();
+  void addOperationHive(Operation operation, String key);
+  void addListOperationHive(List<Operation> operation);
+  void editOperationHive(int index, Operation operation);
+  int getId();
+  void deleteOperationHive(int index, String key);
+  void deleteAllHive();
+  List<Operation> getOperationLocal(String key);
+}
+
 class HiveService {
-  LocalDataSourceHive localDataSourceHive = LocalDataSourceHive();
+  LocalDataSourceHive localDataSourceHive = LocalDataSourceHiveImpl();
 
   Future<void> initHive() async {
     await localDataSourceHive.init();
