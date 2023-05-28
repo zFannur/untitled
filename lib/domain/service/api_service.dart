@@ -1,8 +1,13 @@
 import 'package:untitled/data/api/api_client.dart';
 import 'package:untitled/domain/entity/operation.dart';
 
+abstract class ApiClient {
+  Future<List<Operation>> getForm();
+  Future<String> postForm(Operation operation);
+}
+
 class ApiService {
-  final _apiClient = ApiClient();
+  final _apiClient = ApiClientImpl();
 
   Future<List<Operation>> getOperation() async {
     return await _apiClient.getForm();
