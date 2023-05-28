@@ -1,5 +1,6 @@
 import 'package:untitled/data/models/converter.dart';
 import 'package:untitled/data/models/operation_api.dart';
+import 'package:untitled/domain/service/api_service.dart';
 
 import '../../domain/entity/operation.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +8,7 @@ import 'dart:convert' as convert;
 
 //сделать обработку ошибок
 
-class ApiClient {
+class ApiClientImpl implements ApiClient{
   static const uri =
       "https://script.google.com/macros/s/AKfycbySJsChZ2hhhjSqc5V_MPdic2rSMzhBIqs1MFSHsOi_Gpxl5UKR_t-pIPHlZHSF1EQrhg/exec";
 

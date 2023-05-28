@@ -61,7 +61,7 @@ class EditOperationModel extends ChangeNotifier {
   }
 
   void changeDate(DateTime dateTime, bool notifyListener) {
-    if (_state.date == dateTime) return;
+    if (_state.date == dateTime.toString()) return;
     String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss').format(dateTime);
     _state = _state.copyWith(date: formattedDate);
     if (notifyListener){
@@ -146,7 +146,7 @@ class EditOperationModel extends ChangeNotifier {
     if (selected != null && selected != selectedDate) {
       selectedDate = selected;
     }
-    return selectedDate.copyWith(hour: 12, minute: 12, second: 12);;
+    return selectedDate.copyWith(hour: 12, minute: 12, second: 12);
   }
 
   Future<String?> addDialog({
