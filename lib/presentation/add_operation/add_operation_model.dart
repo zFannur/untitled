@@ -48,7 +48,7 @@ class AddOperationModel extends ChangeNotifier {
   );
 
   void changeDate(DateTime dateTime, bool notifyListener) {
-    if (_state.date == dateTime) return;
+    if (_state.date == dateTime.toString()) return;
     //DateTime now = DateTime.now();
     String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss').format(dateTime);
     _state = _state.copyWith(date: formattedDate.toString());

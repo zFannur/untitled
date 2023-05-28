@@ -197,8 +197,8 @@ class _LeadingAppBarWidget extends StatelessWidget {
               backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
             ),
             onPressed: model.reloadOperationInSheet,
-            child: Row(
-              children: const [
+            child: const Row(
+              children: [
                 Icon(
                   Icons.download,
                   size: 35,

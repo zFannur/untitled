@@ -160,10 +160,10 @@ class _TypeFieldWidget extends StatelessWidget {
 }
 
 class _FormFieldWidget extends StatelessWidget {
-  String form;
+  final String form;
   final List<Operation> operations;
 
-  _FormFieldWidget({Key? key, required this.form, required this.operations})
+  const _FormFieldWidget({Key? key, required this.form, required this.operations})
       : super(key: key);
 
   @override

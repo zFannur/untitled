@@ -67,12 +67,14 @@ class OperationModel extends ChangeNotifier {
       print(e);
     }
 
-    if (local.length == sheet.length || sheet.isEmpty) {
+    if (sheet.isEmpty) {
       // TODO: сравнение не работает в будущем сделать чтобы работало
-      _state.operations = _hiveService.getOperation();
+      _state = _state.copyWith(operations:  _hiveService.getOperation());
+    } else if(local.length == sheet.length) {
+      _state = _state.copyWith(operations:  _hiveService.getOperation());
     } else {
       _hiveService.deleteAll();
-      _state.operations = await _operationService.getOperation();
+      _state = _state.copyWith(operations: await _operationService.getOperation());
       _hiveService.addList(_state.operations);
     }
     notifyListeners();
@@ -82,11 +84,9 @@ class OperationModel extends ChangeNotifier {
     final result = await InternetConnectionChecker().hasConnection;
     _state = _state.copyWith(internetStatus: result);
 
-    notifyListeners();
-    if (_state.internetStatus) {
-      _state.operations.clear();
+    if (result) {
+      _state = _state.copyWith(operations: await _operationService.getOperation());
       _hiveService.deleteAll();
-      _state.operations = await _operationService.getOperation();
       _hiveService.addList(_state.operations);
     }
 
