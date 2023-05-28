@@ -7,7 +7,7 @@ abstract class ApiClient {
 }
 
 class ApiService {
-  final _apiClient = ApiClientImpl();
+  final ApiClient _apiClient = ApiClientImpl();
 
   Future<List<Operation>> getOperation() async {
     return await _apiClient.getForm();
