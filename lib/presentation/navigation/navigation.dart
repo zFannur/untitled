@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../add_operation/add_operation_screen.dart';
-import '../edit_operation/edit_operation_screen.dart';
+import '../operation_page/add_operation/add_operation_screen.dart';
+import '../operation_page/edit_operation/edit_operation_screen.dart';
 import '../router/router_screen.dart';
 
 class RouteNames {

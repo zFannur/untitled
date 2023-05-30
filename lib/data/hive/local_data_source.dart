@@ -17,7 +17,7 @@ class LocalDataSourceHiveImpl implements LocalDataSourceHive {
         await path_provider.getApplicationDocumentsDirectory();
     Hive
       ..init(applicationDocumentDir.path)
-      ..registerAdapter(OperationModelHiveAdapter());
+      ..registerAdapter(OperationHiveAdapter());
 
     await Hive.openBox<OperationHive>(operationKey);
     await Hive.openBox<OperationHive>(operationSendKey);

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/domain/entity/operation.dart';
-import 'package:untitled/presentation/add_operation/add_operation_model.dart';
+
+import 'add_operation_model.dart';
 
 class AddOperationScreen extends StatelessWidget {
   const AddOperationScreen({Key? key}) : super(key: key);

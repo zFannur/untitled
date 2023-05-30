@@ -1,14 +1,19 @@
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class Operation {
-  int id;
-  String action;
-  String date;
-  String type;
-  String form;
-  int sum;
-  String note;
+part 'operation.g.dart';
 
-  Operation({
+@JsonSerializable()
+class Operation extends Equatable {
+  final int id;
+  final String action;
+  final String date;
+  final String type;
+  final String form;
+  final int sum;
+  final String note;
+
+  const Operation({
     required this.id,
     required this.action,
     required this.date,
@@ -37,6 +42,21 @@ class Operation {
       note: note ?? this.note,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        action,
+        date,
+        type,
+        form,
+        sum,
+        note,
+      ];
+
+  factory Operation.fromJson(Map<String, dynamic> json) => _$OperationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OperationToJson(this);
 }
 
 class Argument {

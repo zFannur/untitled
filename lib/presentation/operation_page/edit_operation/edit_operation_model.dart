@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../domain/entity/operation.dart';
-import '../../domain/service/hive_service.dart';
+import '../../../domain/entity/operation.dart';
+import '../../../domain/service/hive_service.dart';
 
 class EditOperationModelState {
   final String date;

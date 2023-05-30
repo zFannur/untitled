@@ -6,7 +6,7 @@ part of 'operation_hive.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class OperationModelHiveAdapter extends TypeAdapter<OperationHive> {
+class OperationHiveAdapter extends TypeAdapter<OperationHive> {
   @override
   final int typeId = 0;
 
@@ -53,7 +53,7 @@ class OperationModelHiveAdapter extends TypeAdapter<OperationHive> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OperationModelHiveAdapter &&
+      other is OperationHiveAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

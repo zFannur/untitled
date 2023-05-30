@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:untitled/presentation/navigation/navigation.dart';
-import '../../domain/entity/operation.dart';
-import '../../domain/service/api_service.dart';
-import '../../domain/service/hive_service.dart';
+
+import '../../../domain/entity/operation.dart';
+import '../../../domain/service/api_service.dart';
+import '../../../domain/service/hive_service.dart';
 
 class OperationModelState {
   final bool internetStatus;
