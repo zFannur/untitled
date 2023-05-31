@@ -1,33 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/domain/entity/operation.dart';
-import 'edit_operation_model.dart';
+import 'package:untitled/presentation/operation_page/operation_bloc/operation_bloc.dart';
+import 'package:untitled/presentation/operation_page/operation_change_bloc/operation_change_bloc.dart';
+import '../widgets/AlertDialogWidget.dart';
 
 class EditOperationScreen extends StatelessWidget {
   const EditOperationScreen({Key? key}) : super(key: key);
 
-  static Widget create() {
-    return ChangeNotifierProvider(
-      create: (_) => EditOperationModel(),
-      child: const EditOperationScreen(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final model = context.read<EditOperationModel>();
-    final arg = ModalRoute.of(context)!.settings.arguments as Argument;
-    final index = arg.index;
-    final operation = arg.operations[index];
-    final operations = arg.operations;
+    final operationBloc = context.read<OperationBloc>();
+    final operationChangeBloc = context.read<OperationChangeBloc>();
+    final operation = operationBloc.state.operations[operationChangeBloc.state.index];
 
-    model.changeEditState(
-      date: operation.date,
-      type: operation.type,
-      form: operation.form,
-      sum: operation.sum,
-      note: operation.note,
-    );
+    operationChangeBloc.add(ChangeOperationEvent(
+        date: operation.date,
+        type: operation.type,
+        form: operation.form,
+        sum: operation.sum,
+        note: operation.note,
+      ));
+
 
     return Scaffold(
       appBar: AppBar(
@@ -38,25 +33,29 @@ class EditOperationScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              _DataFieldWidget(date: operation.date),
-              const SizedBox(height: 10),
-              _TypeFieldWidget(
-                type: operation.type,
-                operations: operations,
+              _DataFieldWidget(),
+              SizedBox(height: 10),
+              _FieldWidget(
+                textFieldText: operationChangeBloc.state.type,
+                nameText: 'Type',
+                labelText: 'type of transaction',
+                formType: OperationModelFormType.type,
               ),
-              const SizedBox(height: 10),
-              _FormFieldWidget(
-                form: operation.form,
-                operations: operations,
+              SizedBox(height: 10),
+              _FieldWidget(
+                textFieldText: operationChangeBloc.state.form,
+                nameText: 'Form',
+                labelText: 'form of transaction',
+                formType: OperationModelFormType.form,
               ),
-              const SizedBox(height: 10),
-              _SumFieldWidget(
-                sum: operation.sum,
-              ),
-              const SizedBox(height: 10),
-              _NoteFieldWidget(
-                note: operation.note,
-                operations: operations,
+              SizedBox(height: 10),
+              _SumFieldWidget(),
+              SizedBox(height: 10),
+              _FieldWidget(
+                textFieldText: operationChangeBloc.state.note,
+                nameText: 'Note',
+                labelText: 'note of transaction',
+                formType: OperationModelFormType.note,
               ),
             ],
           ),
@@ -64,7 +63,8 @@ class EditOperationScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          model.onEditButtonPressed(index, operation.id);
+          operationBloc
+              .add(EditOperationEvent(operation: operation, index: operationChangeBloc.state.index));
           Navigator.of(context).pop();
         },
         child: const Icon(Icons.add),
@@ -74,17 +74,29 @@ class EditOperationScreen extends StatelessWidget {
 }
 
 class _DataFieldWidget extends StatelessWidget {
-  final String date;
+  const _DataFieldWidget({Key? key}) : super(key: key);
 
-  const _DataFieldWidget({Key? key, required this.date}) : super(key: key);
+  Future<DateTime> selectDate(BuildContext context) async {
+    DateTime selectedDate = DateTime.now();
+    final selected = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2030),
+    );
+    if (selected != null && selected != selectedDate) {
+      selectedDate = selected;
+    }
+    return selectedDate.copyWith(hour: 12, minute: 12, second: 12);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<EditOperationModel>();
-    DateTime date = DateTime.now();
+    final operationChangeBloc = context.read<OperationChangeBloc>();
+
     TextEditingController controller =
-        TextEditingController(text: date.toString());
-    model.changeDate(date, false);
+        TextEditingController(text: operationChangeBloc.state.date);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -103,9 +115,10 @@ class _DataFieldWidget extends StatelessWidget {
             labelText: 'date of operation',
           ),
           onTap: () async {
-            date = await model.selectDate(context);
+            DateTime date = await selectDate(context);
             controller.text = date.toString();
-            model.changeDate(date, true);
+            operationChangeBloc
+                .add(ChangeOperationEvent(date: date.toString()));
           },
         ),
       ],
@@ -113,90 +126,127 @@ class _DataFieldWidget extends StatelessWidget {
   }
 }
 
-class _TypeFieldWidget extends StatelessWidget {
-  final String type;
-  final List<Operation> operations;
+class _FieldWidget extends StatelessWidget {
+  final String textFieldText;
+  final String nameText;
+  final String labelText;
+  final OperationModelFormType formType;
 
-  const _TypeFieldWidget(
-      {Key? key, required this.type, required this.operations})
-      : super(key: key);
+  const _FieldWidget({
+    Key? key,
+    required this.textFieldText,
+    required this.nameText,
+    required this.labelText,
+    required this.formType,
+  }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    TextEditingController controller = TextEditingController(text: type);
-    final model = context.read<EditOperationModel>();
-    model.changeType(type, false);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Type *',
-          style: TextStyle(fontSize: 20),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        TextField(
+  Future<String?> addDialog({
+    required BuildContext context,
+    required String text,
+    required List<Operation> operations,
+    required OperationModelFormType type,
+  }) async {
+    return await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        TextEditingController controller = TextEditingController(text: text);
+        List<String> filter = [];
+        List<String> filtered = [];
+
+        switch (type) {
+          case OperationModelFormType.type:
+            var uniques = <String, bool>{};
+            for (var s in operations) {
+              uniques[s.type] = true;
+            }
+            for (var key in uniques.keys) {
+              filter.add(key);
+              filtered.add(key);
+            }
+            break;
+          case OperationModelFormType.form:
+            var uniques = <String, bool>{};
+            for (var s in operations) {
+              uniques[s.form] = true;
+            }
+            for (var key in uniques.keys) {
+              filter.add(key);
+              filtered.add(key);
+            }
+            break;
+          case OperationModelFormType.note:
+            var uniques = <String, bool>{};
+            for (var s in operations) {
+              uniques[s.note] = true;
+            }
+            for (var key in uniques.keys) {
+              filter.add(key);
+              filtered.add(key);
+            }
+            break;
+        }
+        //filtered = filter;
+
+        return AlertDialogWidget(
+          filter: filter,
+          operationsItems: filtered,
           controller: controller,
-          decoration: const InputDecoration(
-            suffixIcon: Icon(Icons.add),
-            border: OutlineInputBorder(),
-            labelText: 'type of transaction',
-          ),
-          onTap: () async {
-            final type = await model.addDialog(
-              context: context,
-              text: controller.text,
-              operations: operations,
-              type: OperationModelFormType.type,
-            ) ?? '';
-            model.changeType(type, true);
-            controller.text = type;
-          },
-        ),
-      ],
+          text: text,
+        );
+      },
     );
   }
-}
-
-class _FormFieldWidget extends StatelessWidget {
-  final String form;
-  final List<Operation> operations;
-
-  const _FormFieldWidget({Key? key, required this.form, required this.operations})
-      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<EditOperationModel>();
-    TextEditingController controller = TextEditingController(text: form);
-    model.changeForm(form, false);
+    final operationChangeBloc = context.read<OperationChangeBloc>();
+
+    TextEditingController controller = TextEditingController(
+      text: textFieldText,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Form *',
-          style: TextStyle(fontSize: 20),
+        Text(
+          nameText,
+          style: const TextStyle(fontSize: 20),
         ),
         const SizedBox(
           height: 10,
         ),
         TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            suffixIcon: Icon(Icons.add),
-            border: OutlineInputBorder(),
-            labelText: 'Form',
+          decoration: InputDecoration(
+            suffixIcon: const Icon(Icons.add),
+            border: const OutlineInputBorder(),
+            labelText: labelText,
           ),
           onTap: () async {
-            final form = await model.addDialog(
-              context: context,
-              text: controller.text,
-              operations: operations,
-              type: OperationModelFormType.form,
-            ) ?? '';
-            model.changeForm(form, true);
-            controller.text = form;
+            final operationBloc = context.read<OperationBloc>();
+            final selectedText = await addDialog(
+                  context: context,
+                  text: controller.text,
+                  operations: operationBloc.state.operations,
+                  type: formType,
+                ) ??
+                '';
+            switch (formType) {
+              case OperationModelFormType.type:
+                operationChangeBloc
+                    .add(ChangeOperationEvent(type: selectedText));
+                break;
+              case OperationModelFormType.form:
+                operationChangeBloc
+                    .add(ChangeOperationEvent(form: selectedText));
+                break;
+              case OperationModelFormType.note:
+                operationChangeBloc
+                    .add(ChangeOperationEvent(note: selectedText));
+                break;
+            }
+            controller.text = selectedText;
           },
         ),
       ],
@@ -205,14 +255,12 @@ class _FormFieldWidget extends StatelessWidget {
 }
 
 class _SumFieldWidget extends StatelessWidget {
-  final int sum;
 
-  const _SumFieldWidget({Key? key, required this.sum}) : super(key: key);
+  const _SumFieldWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<EditOperationModel>();
-    model.changeSum(sum.toString(), false);
+    final operationChangeBloc = context.read<OperationChangeBloc>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -225,60 +273,14 @@ class _SumFieldWidget extends StatelessWidget {
         ),
         TextFormField(
           keyboardType: TextInputType.number,
-          initialValue: sum.toString(),
+          initialValue: operationChangeBloc.state.sum.toString(),
           decoration: const InputDecoration(
             suffixIcon: Icon(Icons.money),
             border: OutlineInputBorder(),
             labelText: 'sum',
           ),
           onChanged: (value) {
-            model.changeSum(value, true);
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _NoteFieldWidget extends StatelessWidget {
-  final String note;
-  final List<Operation> operations;
-
-  const _NoteFieldWidget(
-      {Key? key, required this.note, required this.operations})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final model = context.read<EditOperationModel>();
-    TextEditingController controller = TextEditingController(text: note);
-    model.changeForm(note, false);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Note',
-          style: TextStyle(fontSize: 20),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            suffixIcon: Icon(Icons.add),
-            border: OutlineInputBorder(),
-            labelText: 'note',
-          ),
-          onTap: () async {
-            final note = await model.addDialog(
-              context: context,
-              text: controller.text,
-              operations: operations,
-              type: OperationModelFormType.note,
-            ) ?? '';
-            model.changeForm(note, true);
-            controller.text = note;
+            operationChangeBloc.add(ChangeOperationEvent(sum: int.tryParse(value)));
           },
         ),
       ],

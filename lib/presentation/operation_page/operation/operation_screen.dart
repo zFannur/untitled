@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'operation_model.dart';
+import 'package:untitled/domain/service/api_service.dart';
+import 'package:untitled/domain/service/hive_service.dart';
+import '../../navigation/navigation.dart';
+import '../operation_bloc/operation_bloc.dart';
+import '../operation_change_bloc/operation_change_bloc.dart';
 
 class OperationScreen extends StatelessWidget {
   const OperationScreen({Key? key}) : super(key: key);
 
-  static Widget create() {
-    return ChangeNotifierProvider(
-      create: (_) => OperationModel(),
-      child: const OperationScreen(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    //final model = context.read<OperationModel>();
+    final operationBloc = context.watch<OperationBloc>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -28,33 +26,12 @@ class OperationScreen extends StatelessWidget {
             _AppBarActionWidget(),
           ],
         ),
-        if (context
-            .select((OperationModel value) => value.state.operations)
-            .isEmpty)
+        if (operationBloc.state.isLoading)
           const Center(child: CircularProgressIndicator())
         else
           const _ListOperationsWidget(),
         const ShimmerButton(),
       ],
-    );
-  }
-}
-
-class AddOperationButton extends StatelessWidget {
-  const AddOperationButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final model = context.read<OperationModel>();
-    //final model = GetIt.instance<OperationModel>();
-    return ElevatedButton(
-      onPressed: () {
-        model.onAddOperationButtonPressed(context, model.state.operations);
-      },
-      child: const SizedBox(
-        height: 40.0,
-        child: Center(child: Text('Add Operation')),
-      ),
     );
   }
 }
@@ -74,10 +51,11 @@ class ShimmerButtonState extends State<ShimmerButton>
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-        duration: const Duration(seconds: 5), vsync: this);
-    _colorAnimation = ColorTween(begin: Colors.lightGreen[100], end: Colors.lightGreen)
-        .animate(CurvedAnimation(
+    _animationController =
+        AnimationController(duration: const Duration(seconds: 5), vsync: this);
+    _colorAnimation =
+        ColorTween(begin: Colors.lightGreen[100], end: Colors.lightGreen)
+            .animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
@@ -85,22 +63,12 @@ class ShimmerButtonState extends State<ShimmerButton>
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<OperationModel>();
-    //final model = GetIt.instance<OperationModel>();
     _animationController.repeat(
       reverse: true,
     );
     return MaterialButton(
       onPressed: () {
-        model.onAddOperationButtonPressed(context, model.state.operations);
-        setState(() {
-          // _isAnimating = !_isAnimating; // Toggle the animation state
-          // if (_isAnimating) {
-          //    // Start the animation
-          // } else {
-          //   _animationController.stop(); // Stop the animation
-          // }
-        });
+        Navigator.of(context).pushNamed(RouteNames.addOperation);
       },
       textColor: Colors.white,
       child: Stack(
@@ -158,9 +126,8 @@ class _AppBarActionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<OperationModel>();
-    //final model = GetIt.instance<OperationModel>();
-    return model.state.internetStatus
+    final operationBloc = context.watch<OperationBloc>();
+    return operationBloc.state.internetConnected
         ? const Text('')
         : const Icon(Icons.signal_wifi_connected_no_internet_4_outlined);
   }
@@ -171,15 +138,12 @@ class _LeadingAppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<OperationModel>();
-    //final model = GetIt.instance<OperationModel>();
-    return model.state.isSending
+    final operationBloc = context.watch<OperationBloc>();
+    return operationBloc.state.isSend
         ? Row(
             children: [
               IconButton(
-                onPressed: () async {
-                  await model.loadOperation();
-                },
+                onPressed: () {},
                 icon: const Icon(
                   Icons.file_upload,
                   size: 35,
@@ -187,7 +151,7 @@ class _LeadingAppBarWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '${model.state.statusMessage} отправка',
+                '${operationBloc.state.isSend} отправка',
                 style: const TextStyle(color: Colors.red),
               )
             ],
@@ -196,7 +160,7 @@ class _LeadingAppBarWidget extends StatelessWidget {
             style: const ButtonStyle(
               backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
             ),
-            onPressed: model.reloadOperationInSheet,
+            onPressed: () => operationBloc.add(GetOperationEvent()),
             child: const Row(
               children: [
                 Icon(
@@ -219,29 +183,30 @@ class _ListOperationsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<OperationModel>();
+    final operationBloc = context.watch<OperationBloc>();
     DateFormat dateFormat = DateFormat("dd.MM.yyyy kk:mm:ss");
 
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView.builder(
-            itemCount: model.state.operations.length,
-            itemBuilder: (context, index) {
-              final operation = model.state.operations[index];
-              DateTime dateTime = dateFormat.parse(operation.date);
+          itemCount: operationBloc.state.operations.length,
+          itemBuilder: (context, index) {
+            final operation = operationBloc.state.operations[index];
+            DateTime dateTime = dateFormat.parse(operation.date);
 
-              return Card(
-                  child: Row(
+            return Card(
+              child: Row(
                 children: [
                   SizedBox(
-                      width: 65,
-                      child: Center(
-                        child: Text('${dateTime.day}:${dateTime.month}'
+                    width: 65,
+                    child: Center(
+                      child: Text('${dateTime.day}:${dateTime.month}'
                           //operation.date,
-                            //'${DateTime.parse(operation.date).day}:${DateTime.parse(operation.date).month}:${DateTime.parse(operation.date).year}',
-                            ),
-                      )),
+                          //'${DateTime.parse(operation.date).day}:${DateTime.parse(operation.date).month}:${DateTime.parse(operation.date).year}',
+                          ),
+                    ),
+                  ),
                   Expanded(
                     flex: 2,
                     child: Column(
@@ -252,8 +217,13 @@ class _ListOperationsWidget extends StatelessWidget {
                   Expanded(
                     child: IconButton(
                       // edit button
-                      onPressed: () => model.onEditOperationButtonPressed(
-                          context: context, index: index),
+                      onPressed: () {
+                        context.read<OperationChangeBloc>().add(
+                              ChangeOperationEvent(index: index),
+                            );
+                        Navigator.of(context)
+                            .pushNamed(RouteNames.editOperation);
+                      },
                       icon: const Icon(
                         Icons.edit,
                         color: Colors.grey,
@@ -264,7 +234,8 @@ class _ListOperationsWidget extends StatelessWidget {
                     child: IconButton(
                       // delete button
                       onPressed: () {
-                        model.onDeleteButtonPressed(index, operation.id);
+                        operationBloc.add(DeleteOperationEvent(
+                            index: index, id: operation.id));
                       },
                       icon: const Icon(
                         Icons.delete,
@@ -273,8 +244,10 @@ class _ListOperationsWidget extends StatelessWidget {
                     ),
                   ),
                 ],
-              ));
-            }),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

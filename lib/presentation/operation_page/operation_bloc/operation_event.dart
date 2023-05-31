@@ -33,3 +33,12 @@ class AddOperationEvent extends OperationEvent {
   @override
   List<Object?> get props => [operation];
 }
+
+class EditOperationEvent extends OperationEvent {
+  final Operation operation;
+  final int index;
+  const EditOperationEvent({required this.operation, required this.index});
+
+  @override
+  List<Object?> get props => [operation, index];
+}

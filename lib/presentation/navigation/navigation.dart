@@ -15,7 +15,7 @@ class Navigation {
     return {
       RouteNames.navigationBar: (context) => const RouterScreen(),
       RouteNames.addOperation: (context) => AddOperationScreen.create(),
-      RouteNames.editOperation: (context) => EditOperationScreen.create(),
+      RouteNames.editOperation: (context) => EditOperationScreen(),
     };
   }
 }
