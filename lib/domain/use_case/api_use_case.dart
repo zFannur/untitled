@@ -1,18 +1,31 @@
 import 'package:untitled/data/api/api_client.dart';
 import 'package:untitled/domain/entity/operation.dart';
 
-abstract class ApiClient {
-  Future<List<Operation>> getForm();
-  Future<String> postForm(Operation operation);
+import '../repository/api_repository.dart';
+
+abstract class ApiUseCase {
+  Future<List<Operation>> getOperation();
+
+  Future<String> sendOperation({
+    required String action,
+    required int id,
+    required String date,
+    required String type,
+    required String form,
+    required int sum,
+    required String note,
+  });
 }
 
-class ApiService {
+class ApiUseCaseImpl implements ApiUseCase{
   final ApiClient _apiClient = ApiClientImpl();
 
+  @override
   Future<List<Operation>> getOperation() async {
     return await _apiClient.getForm();
   }
 
+  @override
   Future<String> sendOperation({
     required String action,
     required int id,

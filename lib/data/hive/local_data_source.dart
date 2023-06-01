@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:untitled/domain/entity/operation.dart';
-import 'package:untitled/domain/service/hive_service.dart';
+import '../../domain/repository/hive_repository.dart';
 import '../models/converter.dart';
 import '../models/operation_hive.dart';
 

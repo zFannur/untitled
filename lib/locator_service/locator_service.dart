@@ -1,7 +1,5 @@
 import 'package:get_it/get_it.dart';
 
-//import '../presentation/operation/operation_model.dart';
-
 final sl = GetIt.instance;
 
 Future<void> init() async {

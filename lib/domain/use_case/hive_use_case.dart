@@ -1,32 +1,63 @@
 import 'package:untitled/domain/entity/operation.dart';
 
 import '../../data/hive/local_data_source.dart';
+import '../repository/hive_repository.dart';
 
-abstract class LocalDataSourceHive {
-  String get operationKey;
-  String get operationSendKey;
+abstract class HiveUseCase {
+  Future<void> initHive();
 
-  Future<void> init();
-  void addOperationHive(Operation operation, String key);
-  void addListOperationHive(List<Operation> operation);
-  void editOperationHive(int index, Operation operation);
-  int getId();
-  void deleteOperationHive(int index, String key);
-  void deleteAllHive();
-  List<Operation> getOperationLocal(String key);
+  void addList(List<Operation> operation);
+
+  void addOperation({
+    required int id,
+    required String date,
+    required String type,
+    required String form,
+    required int sum,
+    required String note,
+  });
+
+  List<Operation> getOperation();
+
+  void editOperation({
+    required int id,
+    required int index,
+    required String date,
+    required String type,
+    required String form,
+    required int sum,
+    required String note,
+  });
+
+  int getNewId();
+
+  void deleteAll();
+
+  void deleteOperationCache(int index);
+
+  void deleteOperation(
+    int index,
+    int id,
+  );
+
+  List<Operation> getCache();
 }
 
-class HiveService {
+
+class HiveUseCaseImpl implements HiveUseCase{
   LocalDataSourceHive localDataSourceHive = LocalDataSourceHiveImpl();
 
+  @override
   Future<void> initHive() async {
     await localDataSourceHive.init();
   }
 
+  @override
   void addList(List<Operation> operation) {
     localDataSourceHive.addListOperationHive(operation);
   }
 
+  @override
   void addOperation({
     required int id,
     required String date,
@@ -51,6 +82,7 @@ class HiveService {
         operation, localDataSourceHive.operationSendKey);
   }
 
+  @override
   List<Operation> getOperation() {
     List<Operation> operations = [];
     operations =
@@ -61,6 +93,7 @@ class HiveService {
     return operations;
   }
 
+  @override
   List<Operation> getCache() {
     List<Operation> operations = [];
     operations = localDataSourceHive
@@ -68,6 +101,7 @@ class HiveService {
     return operations;
   }
 
+  @override
   void editOperation({
     required int id,
     required int index,
@@ -92,19 +126,23 @@ class HiveService {
         operation, localDataSourceHive.operationSendKey);
   }
 
+  @override
   int getNewId() {
     return localDataSourceHive.getId();
   }
 
+  @override
   void deleteAll() {
     localDataSourceHive.deleteAllHive();
   }
 
+  @override
   void deleteOperationCache(int index) {
     localDataSourceHive.deleteOperationHive(
         index, localDataSourceHive.operationSendKey);
   }
 
+  @override
   void deleteOperation(
     int index,
     int id,
