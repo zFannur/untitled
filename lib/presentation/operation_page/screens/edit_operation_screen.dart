@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/domain/entity/operation.dart';
-import 'package:untitled/presentation/operation_page/operation_bloc/operation_bloc.dart';
-import 'package:untitled/presentation/operation_page/operation_change_bloc/operation_change_bloc.dart';
+import '../../bloc/operation_bloc/operation_bloc.dart';
+import '../../bloc/operation_change_bloc/operation_change_bloc.dart';
 import '../widgets/AlertDialogWidget.dart';
 
 class EditOperationScreen extends StatelessWidget {

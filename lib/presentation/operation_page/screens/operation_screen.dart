@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../bloc/operation_bloc/operation_bloc.dart';
+import '../../bloc/operation_change_bloc/operation_change_bloc.dart';
 import '../../navigation/navigation.dart';
-import '../operation_bloc/operation_bloc.dart';
-import '../operation_change_bloc/operation_change_bloc.dart';
 
 class OperationScreen extends StatelessWidget {
   const OperationScreen({Key? key}) : super(key: key);
