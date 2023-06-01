@@ -1,6 +1,5 @@
 import 'package:get_it/get_it.dart';
 
-import '../presentation/operation_page/add_operation/add_operation_model.dart';
 //import '../presentation/operation/operation_model.dart';
 
 final sl = GetIt.instance;
@@ -14,6 +13,6 @@ Future<void> init() async {
   // });
   //
   // sl.registerSingleton(HiveService());
-  sl.registerSingleton(AddOperationModel());
+  //sl.registerSingleton(AddOperationModel());
   //sl.registerSingleton(OperationModel());
 }

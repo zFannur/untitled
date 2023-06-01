@@ -23,15 +23,23 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     on<DeleteOperationEvent>(_onDeleteOperationEvent);
     on<AddOperationEvent>(_onAddOperationEvent);
     on<EditOperationEvent>(_onEditOperationEvent);
+    on<CheckInternetEvent>(_onCheckInternetEvent);
 
     operationBlocSubscription = stream.listen((state) {
       List<Operation> cache = hiveService.getCache();
+      if (!this.state.internetConnected) add(CheckInternetEvent());
 
       if (cache.isEmpty && this.state.isSend) return;
-      if (cache.isNotEmpty && !this.state.isSend) {
+      if (cache.isNotEmpty && !this.state.isSend && this.state.internetConnected) {
         add(SendOperationEvent(operation: cache[0]));
       }
     });
+  }
+
+  _onCheckInternetEvent(
+      CheckInternetEvent event, Emitter<OperationState> emit) async {
+    final isConnect = await InternetConnectionChecker().hasConnection;
+    emit(state.copyWith(internetConnected: isConnect));
   }
 
   _onGetOperationEvent(
@@ -79,7 +87,8 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
         note: event.operation.note,
       );
       if (isSendAnswer == 'SUCCESS') hiveService.deleteOperationCache(0);
-      emit(state.copyWith(isSendAnswer: isSendAnswer, isSend: false));
+      List<Operation> cache = hiveService.getCache();
+      emit(state.copyWith(isSendAnswer: isSendAnswer, isSend: false, cacheLength: cache.length));
     } catch (_) {
       emit(state.copyWith(isSendAnswer: "ERROR", isSend: false));
     }
@@ -94,15 +103,14 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     hiveService.deleteOperation(event.index, state.operations.elementAt(event.index).id);
     operations.removeAt(event.index);
 
-    emit(state.copyWith(operations: operations));
-    emit(state.copyWith(isLoading: false));
+    List<Operation> cache = hiveService.getCache();
+
+    emit(state.copyWith(operations: operations, isLoading: false, cacheLength: cache.length));
   }
 
   _onAddOperationEvent(
       AddOperationEvent event, Emitter<OperationState> emit) async {
-    List<Operation> operations = state.operations;
-
-    operations.add(event.operation);
+    emit(state.copyWith(isLoading: true));
 
     final newId = hiveService.getNewId();
     hiveService.addOperation(
@@ -114,11 +122,25 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
       note: event.operation.note,
     );
 
-    emit(state.copyWith(operations: operations));
+    List<Operation> local = hiveService.getOperation();
+    List<Operation> cache = hiveService.getCache();
+    emit(state.copyWith(operations: local, isLoading: false, cacheLength: cache.length));
   }
 
   _onEditOperationEvent(
       EditOperationEvent event, Emitter<OperationState> emit) async {
-
+    emit(state.copyWith(isLoading: true));
+    hiveService.editOperation(
+      id: event.operation.id,
+      index: event.index,
+      date: event.operation.date,
+      type: event.operation.type,
+      form: event.operation.form,
+      sum: event.operation.sum,
+      note: event.operation.note,
+    );
+    List<Operation> local = hiveService.getOperation();
+    List<Operation> cache = hiveService.getCache();
+    emit(state.copyWith(operations: local, isLoading: false, cacheLength: cache.length));
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../operation_page/add_operation/add_operation_screen.dart';
-import '../operation_page/edit_operation/edit_operation_screen.dart';
+import '../operation_page/screens/add_operation_screen.dart';
+import '../operation_page/screens/edit_operation_screen.dart';
 import '../router/router_screen.dart';
 
 class RouteNames {
@@ -14,7 +14,7 @@ class Navigation {
   static Map<String, Widget Function(BuildContext)> get routes {
     return {
       RouteNames.navigationBar: (context) => const RouterScreen(),
-      RouteNames.addOperation: (context) => AddOperationScreen.create(),
+      RouteNames.addOperation: (context) => AddOperationScreen(),
       RouteNames.editOperation: (context) => EditOperationScreen(),
     };
   }
