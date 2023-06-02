@@ -1,6 +1,4 @@
 import 'package:untitled/domain/entity/operation.dart';
-
-import '../../data/hive/local_data_source.dart';
 import '../repository/hive_repository.dart';
 
 abstract class HiveUseCase {
@@ -45,7 +43,8 @@ abstract class HiveUseCase {
 
 
 class HiveUseCaseImpl implements HiveUseCase{
-  LocalDataSourceHive localDataSourceHive = LocalDataSourceHiveImpl();
+  LocalDataSourceHive localDataSourceHive;
+  HiveUseCaseImpl({required this.localDataSourceHive});
 
   @override
   Future<void> initHive() async {

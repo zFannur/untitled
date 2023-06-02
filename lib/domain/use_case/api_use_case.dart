@@ -1,6 +1,4 @@
-import 'package:untitled/data/api/api_client.dart';
 import 'package:untitled/domain/entity/operation.dart';
-
 import '../repository/api_repository.dart';
 
 abstract class ApiUseCase {
@@ -18,7 +16,10 @@ abstract class ApiUseCase {
 }
 
 class ApiUseCaseImpl implements ApiUseCase{
-  final ApiClient _apiClient = ApiClientImpl();
+  late final ApiClient _apiClient;
+
+  ApiUseCaseImpl({required apiClient}) : _apiClient = apiClient;
+
 
   @override
   Future<List<Operation>> getOperation() async {

@@ -42,8 +42,6 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     return super.close();
   }
 
-
-
   _onCheckInternetEvent(
       CheckInternetEvent event, Emitter<OperationState> emit) async {
     final isConnect = await InternetConnectionChecker().hasConnection;
