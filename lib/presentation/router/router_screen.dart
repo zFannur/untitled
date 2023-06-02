@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:untitled/presentation/operation_page/operation_change_bloc/operation_change_bloc.dart';
-
-import '../../domain/service/api_service.dart';
-import '../../domain/service/hive_service.dart';
-import '../operation_page/operation/operation_screen.dart';
-import '../operation_page/operation_bloc/operation_bloc.dart';
+import '../operation_page/screens/operation_screen.dart';
 
 class RouterScreen extends StatefulWidget {
   const RouterScreen({Key? key}) : super(key: key);
@@ -32,7 +26,7 @@ class _RouterScreenState extends State<RouterScreen> {
       ),
       body: IndexedStack(
         index: _selectedPage,
-        children: [
+        children: const [
           Text('статистика'),
           OperationScreen(), // операции
           Text('планирование'), // планирование

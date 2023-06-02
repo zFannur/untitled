@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:untitled/domain/service/api_service.dart';
-import 'package:untitled/domain/service/hive_service.dart';
+import '../../bloc/operation_bloc/operation_bloc.dart';
+import '../../bloc/operation_change_bloc/operation_change_bloc.dart';
 import '../../navigation/navigation.dart';
-import '../operation_bloc/operation_bloc.dart';
-import '../operation_change_bloc/operation_change_bloc.dart';
 
 class OperationScreen extends StatelessWidget {
   const OperationScreen({Key? key}) : super(key: key);
@@ -68,6 +66,15 @@ class ShimmerButtonState extends State<ShimmerButton>
     );
     return MaterialButton(
       onPressed: () {
+        context.read<OperationChangeBloc>().add(
+          ChangeOperationEvent(
+            date: DateTime.now(),
+            type: '',
+            form: '',
+            sum: 0,
+            note: '',
+          ),
+        );
         Navigator.of(context).pushNamed(RouteNames.addOperation);
       },
       textColor: Colors.white,
@@ -151,7 +158,7 @@ class _LeadingAppBarWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '${operationBloc.state.isSend} отправка',
+                '${operationBloc.state.cacheLength} отправка',
                 style: const TextStyle(color: Colors.red),
               )
             ],
@@ -161,16 +168,18 @@ class _LeadingAppBarWidget extends StatelessWidget {
               backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
             ),
             onPressed: () => operationBloc.add(GetOperationEvent()),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.download,
                   size: 35,
                   color: Colors.blue,
                 ),
                 Text(
-                  'Загрузить данные из сети',
-                  style: TextStyle(color: Colors.blue),
+                  operationBloc.state.cacheLength == 0
+                  ? 'Из таблицы'
+                  : 'Из таблицы, отправка ${operationBloc.state.cacheLength}',
+                  style: const TextStyle(color: Colors.blue),
                 )
               ],
             ),
@@ -219,7 +228,14 @@ class _ListOperationsWidget extends StatelessWidget {
                       // edit button
                       onPressed: () {
                         context.read<OperationChangeBloc>().add(
-                              ChangeOperationEvent(index: index),
+                              ChangeOperationEvent(
+                                index: index,
+                                date: dateTime,
+                                type: operation.type,
+                                form: operation.form,
+                                sum: operation.sum,
+                                note: operation.note,
+                              ),
                             );
                         Navigator.of(context)
                             .pushNamed(RouteNames.editOperation);

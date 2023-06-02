@@ -1,10 +1,11 @@
 import 'package:untitled/data/models/converter.dart';
 import 'package:untitled/data/models/operation_api.dart';
-import 'package:untitled/domain/service/api_service.dart';
 
 import '../../domain/entity/operation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+
+import '../../domain/repository/api_repository.dart';
 
 //сделать обработку ошибок
 

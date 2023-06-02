@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:untitled/domain/entity/operation.dart';
-import 'package:untitled/domain/service/hive_service.dart';
+import '../../domain/repository/hive_repository.dart';
 import '../models/converter.dart';
 import '../models/operation_hive.dart';
 
@@ -29,8 +29,8 @@ class LocalDataSourceHiveImpl implements LocalDataSourceHive {
   }
 
   @override
-  void addListOperationHive(List<Operation> operation) {
-    Hive.box<OperationHive>(operationKey).addAll(ConvertOperation.operationToOperationModelList(operation));
+  Future<void> addListOperationHive(List<Operation> operation) async {
+    await Hive.box<OperationHive>(operationKey).addAll(ConvertOperation.operationToOperationModelList(operation));
   }
 
   @override
@@ -57,8 +57,8 @@ class LocalDataSourceHiveImpl implements LocalDataSourceHive {
   }
 
   @override
-  void deleteAllHive() {
-    Hive.box<OperationHive>(operationKey).clear();
+  Future<void> deleteAllHive() async {
+    await Hive.box<OperationHive>(operationKey).clear();
   }
 
   @override

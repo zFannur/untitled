@@ -2,6 +2,7 @@ part of 'operation_bloc.dart';
 
 class OperationState extends Equatable {
   final List<Operation> operations;
+  final int cacheLength;
   final bool isLoading;
   final bool isError;
   final bool isSend;
@@ -10,6 +11,7 @@ class OperationState extends Equatable {
 
   const OperationState({
     this.operations = const [],
+    this.cacheLength = 0,
     this.isLoading = false,
     this.isError = false,
     this.isSend = false,
@@ -19,6 +21,7 @@ class OperationState extends Equatable {
 
   OperationState copyWith({
     List<Operation>? operations,
+    int? cacheLength,
     bool? isLoading,
     bool? isError,
     bool? isSend,
@@ -27,6 +30,7 @@ class OperationState extends Equatable {
   }) {
     return OperationState(
       operations: operations ?? this.operations,
+      cacheLength: cacheLength ?? this.cacheLength,
       isLoading: isLoading ?? this.isLoading,
       isError: isError ?? this.isError,
       isSend: isSend ?? this.isSend,

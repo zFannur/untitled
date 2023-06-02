@@ -24,7 +24,7 @@ class ChangeDateEvent extends OperationChangeEvent {
 
 class ChangeOperationEvent extends OperationChangeEvent {
   final int? index;
-  final String? date;
+  final DateTime? date;
   final String? type;
   final String? form;
   final int? sum;
