@@ -8,7 +8,6 @@ import 'package:untitled/domain/use_case/hive_use_case.dart';
 
 import '../../../../domain/entity/operation.dart';
 
-
 part 'operation_event.dart';
 part 'operation_state.dart';
 
