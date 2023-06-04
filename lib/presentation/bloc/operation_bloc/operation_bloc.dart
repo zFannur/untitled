@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:intl/intl.dart';
 import 'package:untitled/domain/use_case/api_use_case.dart';
 import 'package:untitled/domain/use_case/hive_use_case.dart';
 
@@ -42,6 +43,27 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     return super.close();
   }
 
+  List<Operation> _onSortOperation(List<Operation> filter) {
+    DateFormat dateFormat = DateFormat("dd.MM.yyyy kk:mm:ss");
+
+    if(filter.isNotEmpty) {
+      for (int i = 0; i < filter.length; i++) {
+        for (int j = 0; j < filter.length - 1; j++) {
+          if (dateFormat
+              .parse(filter[j].date)
+              .millisecondsSinceEpoch < dateFormat
+              .parse(filter[j + 1].date)
+              .millisecondsSinceEpoch) {
+            Operation b = filter[j];
+            filter[j] = filter[j + 1];
+            filter[j + 1] = b;
+          }
+        }
+      }
+    }
+    return filter;
+  }
+
   _onCheckInternetEvent(
       CheckInternetEvent event, Emitter<OperationState> emit) async {
     final isConnect = await InternetConnectionChecker().hasConnection;
@@ -64,17 +86,19 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
       if (isConnect) sheet = await apiService.getOperation();
 
       if (sheet.isEmpty) {
-        emit(state.copyWith(operations: local, isLoading: false));
+        emit(state.copyWith(operations: _onSortOperation(local), isLoading: false));
       } else if (local.length == sheet.length) {
-        emit(state.copyWith(operations: local, isLoading: false));
+        emit(state.copyWith(operations: _onSortOperation(local), isLoading: false));
       } else {
         await hiveService.deleteAll();
         await hiveService.addList(sheet);
-        emit(state.copyWith(operations: sheet, isLoading: false));
+        emit(state.copyWith(operations: _onSortOperation(sheet), isLoading: false));
       }
     } catch (_) {
       emit(state.copyWith(isError: true, isLoading: false));
     }
+
+    //add(SortOperationEvent());
   }
 
   _onSendOperationEvent(
@@ -105,8 +129,6 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     List<Operation> operations = state.operations;
 
     emit(state.copyWith(isLoading: true));
-    List<Operation> local = hiveService.getOperation();
-    print(local.length);
 
     hiveService.deleteOperation(event.index, state.operations.elementAt(event.index).id);
     operations.removeAt(event.index);
@@ -133,7 +155,7 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
 
     List<Operation> local = hiveService.getOperation();
     List<Operation> cache = hiveService.getCache();
-    emit(state.copyWith(operations: local, isLoading: false, cacheLength: cache.length));
+    emit(state.copyWith(operations: _onSortOperation(local), isLoading: false, cacheLength: cache.length));
   }
 
   _onEditOperationEvent(
@@ -150,6 +172,7 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     );
     List<Operation> local = hiveService.getOperation();
     List<Operation> cache = hiveService.getCache();
-    emit(state.copyWith(operations: local, isLoading: false, cacheLength: cache.length));
+
+    emit(state.copyWith(operations: _onSortOperation(local), isLoading: false, cacheLength: cache.length));
   }
 }

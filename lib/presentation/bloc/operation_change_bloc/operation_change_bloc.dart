@@ -10,14 +10,14 @@ class OperationChangeBloc
     extends Bloc<OperationChangeEvent, OperationChangeState> {
   OperationChangeBloc() : super(const OperationChangeState()) {
     on<ChangeIndexEvent>(_onChangeIndexEvent);
-    on<ChangeOperationEvent>(_onEditOperationEvent);
+    on<ChangeOperationEvent>(_onChangeOperationEvent);
   }
 
   _onChangeIndexEvent(ChangeIndexEvent event, Emitter<OperationChangeState> emit) {
     emit(state.copyWith(index: event.index));
   }
 
-  _onEditOperationEvent(
+  _onChangeOperationEvent(
       ChangeOperationEvent event, Emitter<OperationChangeState> emit) {
     emit(state.copyWith(isLoading: true));
     emit(state.copyWith(

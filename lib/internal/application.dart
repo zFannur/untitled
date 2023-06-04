@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:untitled/locator_service/locator_service.dart';
+import 'package:untitled/presentation/bloc/statistic_bloc/statistic_bloc.dart';
 import 'package:untitled/presentation/navigation/navigation.dart';
 import '../presentation/bloc/operation_bloc/operation_bloc.dart';
 import '../presentation/bloc/operation_change_bloc/operation_change_bloc.dart';
@@ -19,6 +20,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => getIt<OperationChangeBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<StatisticBloc>(),
         ),
       ],
       child: MaterialApp(

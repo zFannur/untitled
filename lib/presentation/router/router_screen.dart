@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../pages/operation_page/screens/operation_screen.dart';
+import '../pages/statistic_page/screens/statistic_screen.dart';
 
 class RouterScreen extends StatefulWidget {
   const RouterScreen({Key? key}) : super(key: key);
@@ -28,7 +29,7 @@ class _RouterScreenState extends State<RouterScreen> {
       body: IndexedStack(
         index: _selectedPage,
         children: const [
-          Text('статистика'),
+          StatisticScreen(),
           OperationScreen(), // операции
           Text('планирование'), // планирование
         ],

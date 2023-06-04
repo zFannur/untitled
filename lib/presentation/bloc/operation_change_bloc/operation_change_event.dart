@@ -40,5 +40,5 @@ class ChangeOperationEvent extends OperationChangeEvent {
   });
 
   @override
-  List<Object?> get props => [index,date,type, form, sum, note];
+  List<Object?> get props => [index, date,type, form, sum, note];
 }

@@ -18,8 +18,8 @@ abstract class HiveUseCase {
   List<Operation> getOperation();
 
   void editOperation({
-    required int id,
     required int index,
+    required int id,
     required String date,
     required String type,
     required String form,
@@ -102,8 +102,8 @@ class HiveUseCaseImpl implements HiveUseCase{
 
   @override
   void editOperation({
-    required int id,
     required int index,
+    required int id,
     required String date,
     required String type,
     required String form,
@@ -119,6 +119,16 @@ class HiveUseCaseImpl implements HiveUseCase{
       note: note,
       id: id,
     );
+
+    // List<Operation> operations = [];
+    // int index = 0;
+    // operations =
+    //     localDataSourceHive.getOperationLocal(localDataSourceHive.operationKey);
+    // for(int i = 0; i <= operations.length; i++) {
+    //   if(operations[i].id == id) {
+    //     index = i;
+    //   }
+    // }
 
     localDataSourceHive.editOperationHive(index, operation);
     localDataSourceHive.addOperationHive(
