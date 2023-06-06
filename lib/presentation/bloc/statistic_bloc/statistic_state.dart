@@ -1,21 +1,33 @@
 part of 'statistic_bloc.dart';
 
 class StatisticState extends Equatable {
-  final String dropdownValue;
+  final String selectedDate;
+  final String selectedType;
+  final String selectedForm;
+  final String selectedNote;
 
   const StatisticState({
-    this.dropdownValue = '1',
+    this.selectedDate = '1',
+    this.selectedType = 'Расход',
+    this.selectedForm = '1',
+    this.selectedNote = '1',
   });
 
   StatisticState copyWith({
-    String? dropdownValue,
+    String? selectedDate,
+    String? selectedType,
+    String? selectedForm,
+    String? selectedNote,
   }) {
     return StatisticState(
-      dropdownValue: dropdownValue ?? this.dropdownValue,
+      selectedDate: selectedDate ?? this.selectedDate,
+      selectedType: selectedType ?? this.selectedType,
+      selectedForm: selectedForm ?? this.selectedForm,
+      selectedNote: selectedNote ?? this.selectedNote,
     );
   }
 
   @override
 // TODO: implement props
-  List<Object?> get props => [dropdownValue];
+  List<Object?> get props => [selectedDate, selectedType, selectedForm, selectedNote];
 }

@@ -67,6 +67,7 @@ class Argument {
 }
 
 enum OperationModelFormType {
+  date,
   type,
   form,
   note,

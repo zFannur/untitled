@@ -163,6 +163,8 @@ class _FieldWidget extends StatelessWidget {
         List<String> filtered = [];
 
         switch (type) {
+          case OperationModelFormType.date:
+            break;
           case OperationModelFormType.type:
             var uniques = <String, bool>{};
             for (var s in operations) {
@@ -241,6 +243,8 @@ class _FieldWidget extends StatelessWidget {
             ) ??
                 '';
             switch (formType) {
+              case OperationModelFormType.date:
+                break;
               case OperationModelFormType.type:
                 operationChangeBloc
                     .add(ChangeOperationEvent(type: selectedText));

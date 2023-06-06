@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'statistic_event.dart';
+
 part 'statistic_state.dart';
 
 class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
@@ -11,6 +12,13 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
 
   _onChangeStatisticEvent(
       ChangeStatisticEvent event, Emitter<StatisticState> emit) {
-    emit(state.copyWith(dropdownValue: event.dropdownValue));
+    emit(
+      state.copyWith(
+        selectedDate: event.selectedDate,
+        selectedType: event.selectedType,
+        selectedForm: event.selectedForm,
+        selectedNote: event.selectedNote,
+      ),
+    );
   }
 }

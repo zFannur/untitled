@@ -5,10 +5,19 @@ abstract class StatisticEvent extends Equatable {
 }
 
 class ChangeStatisticEvent extends StatisticEvent {
-  final String? dropdownValue;
-  const ChangeStatisticEvent({this.dropdownValue});
+  final String? selectedDate;
+  final String? selectedType;
+  final String? selectedForm;
+  final String? selectedNote;
+
+  const ChangeStatisticEvent({
+    this.selectedDate,
+    this.selectedType,
+    this.selectedForm,
+    this.selectedNote,
+  });
 
   @override
-  List<Object?> get props => [];
-
+  List<Object?> get props =>
+      [selectedDate, selectedType, selectedForm, selectedNote];
 }

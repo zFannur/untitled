@@ -43,25 +43,53 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     return super.close();
   }
 
-  List<Operation> _onSortOperation(List<Operation> filter) {
-    DateFormat dateFormat = DateFormat("dd.MM.yyyy kk:mm:ss");
+  Future<List<Operation>> _onSortOperation(List<Operation> filter) async {
+    //DateFormat dateFormat = DateFormat("dd.MM.yyyy kk:mm:ss");
 
     if(filter.isNotEmpty) {
-      for (int i = 0; i < filter.length; i++) {
-        for (int j = 0; j < filter.length - 1; j++) {
-          if (dateFormat
-              .parse(filter[j].date)
-              .millisecondsSinceEpoch < dateFormat
-              .parse(filter[j + 1].date)
-              .millisecondsSinceEpoch) {
-            Operation b = filter[j];
-            filter[j] = filter[j + 1];
-            filter[j + 1] = b;
-          }
-        }
-      }
+      int high = filter.length - 1;
+      int low = 0;
+
+      filter = quickSort(filter, low, high);
     }
     return filter;
+  }
+
+  List<Operation> quickSort(List<Operation> list, int low, int high) {
+
+    if (low < high) {
+      int pi = partition(list, low, high);
+      quickSort(list, low, pi - 1);
+      quickSort(list, pi + 1, high);
+    }
+    return list;
+  }
+
+  int partition(List<Operation> list, low, high) {
+
+    if (list.isEmpty) {
+      return 0;
+    }
+
+    DateFormat dateFormat = DateFormat("dd.MM.yyyy kk:mm:ss");
+    int pivot = dateFormat
+        .parse(list[high].date).millisecondsSinceEpoch;
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+      if (dateFormat
+          .parse(list[j].date).millisecondsSinceEpoch > pivot) {
+        i++;
+        swap(list, i, j);
+      }
+    }
+    swap(list, i + 1, high);
+    return i + 1;
+  }
+
+  void swap(List list, int i, int j) {
+    Operation temp = list[i];
+    list[i] = list[j];
+    list[j] = temp;
   }
 
   _onCheckInternetEvent(
@@ -86,13 +114,13 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
       if (isConnect) sheet = await apiService.getOperation();
 
       if (sheet.isEmpty) {
-        emit(state.copyWith(operations: _onSortOperation(local), isLoading: false));
+        emit(state.copyWith(operations: await _onSortOperation(local), isLoading: false));
       } else if (local.length == sheet.length) {
-        emit(state.copyWith(operations: _onSortOperation(local), isLoading: false));
+        emit(state.copyWith(operations: await _onSortOperation(local), isLoading: false));
       } else {
         await hiveService.deleteAll();
         await hiveService.addList(sheet);
-        emit(state.copyWith(operations: _onSortOperation(sheet), isLoading: false));
+        emit(state.copyWith(operations: await _onSortOperation(sheet), isLoading: false));
       }
     } catch (_) {
       emit(state.copyWith(isError: true, isLoading: false));
@@ -155,7 +183,7 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
 
     List<Operation> local = hiveService.getOperation();
     List<Operation> cache = hiveService.getCache();
-    emit(state.copyWith(operations: _onSortOperation(local), isLoading: false, cacheLength: cache.length));
+    emit(state.copyWith(operations: await _onSortOperation(local), isLoading: false, cacheLength: cache.length));
   }
 
   _onEditOperationEvent(
@@ -173,6 +201,6 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     List<Operation> local = hiveService.getOperation();
     List<Operation> cache = hiveService.getCache();
 
-    emit(state.copyWith(operations: _onSortOperation(local), isLoading: false, cacheLength: cache.length));
+    emit(state.copyWith(operations: await _onSortOperation(local), isLoading: false, cacheLength: cache.length));
   }
 }
