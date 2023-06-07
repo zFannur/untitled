@@ -1,8 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/domain/entity/operation.dart';
+import '../../../../resource/langs/locale_keys.g.dart';
 import '../../../bloc/operation_bloc/operation_bloc.dart';
 import '../../../bloc/operation_change_bloc/operation_change_bloc.dart';
 import '../widgets/AlertDialogWidget.dart';
@@ -17,7 +18,10 @@ class AddOperationScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add operation'),
+        title: Text(
+          LocaleKeys.operationAddAppBarTitle.tr(),
+          style: TextStyle(fontSize: 20),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -33,15 +37,15 @@ class AddOperationScreen extends StatelessWidget {
                     const SizedBox(height: 10),
                     _FieldWidget(
                       textFieldText: operationChangeBloc.state.type,
-                      nameText: 'Type',
-                      labelText: 'type of transaction',
+                      nameText: LocaleKeys.operationTypeName.tr(),
+                      labelText: LocaleKeys.operationTypeLabelText.tr(),
                       formType: OperationModelFormType.type,
                     ),
                     const SizedBox(height: 10),
                     _FieldWidget(
                       textFieldText: operationChangeBloc.state.form,
-                      nameText: 'Form',
-                      labelText: 'form of transaction',
+                      nameText: LocaleKeys.operationFormName.tr(),
+                      labelText: LocaleKeys.operationFormLabelText.tr(),
                       formType: OperationModelFormType.form,
                     ),
                     const SizedBox(height: 10),
@@ -49,8 +53,8 @@ class AddOperationScreen extends StatelessWidget {
                     const SizedBox(height: 10),
                     _FieldWidget(
                       textFieldText: operationChangeBloc.state.note,
-                      nameText: 'Note',
-                      labelText: 'note of transaction',
+                      nameText: LocaleKeys.operationNoteName.tr(),
+                      labelText: LocaleKeys.operationNoteLabelText.tr(),
                       formType: OperationModelFormType.note,
                     ),
                   ],
@@ -61,7 +65,8 @@ class AddOperationScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss').format(operationChangeBloc.state.date);
+          String formattedDate = DateFormat('dd.MM.yyyy kk:mm:ss')
+              .format(operationChangeBloc.state.date);
           Operation result = Operation(
             id: 0,
             action: 'add',
@@ -71,8 +76,7 @@ class AddOperationScreen extends StatelessWidget {
             sum: operationChangeBloc.state.sum,
             note: operationChangeBloc.state.note,
           );
-          operationBloc.add(AddOperationEvent(
-              operation: result));
+          operationBloc.add(AddOperationEvent(operation: result));
           Navigator.of(context).pop();
         },
         child: const Icon(Icons.add),
@@ -103,30 +107,29 @@ class _DataFieldWidget extends StatelessWidget {
     final operationChangeBloc = context.read<OperationChangeBloc>();
 
     TextEditingController controller =
-    TextEditingController(text: operationChangeBloc.state.date.toString());
+        TextEditingController(text: operationChangeBloc.state.date.toString());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Date *',
-          style: TextStyle(fontSize: 20),
+        Text(
+          LocaleKeys.operationDateName.tr(),
+          style: const TextStyle(fontSize: 20),
         ),
         const SizedBox(
           height: 10,
         ),
         TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            suffixIcon: Icon(Icons.calendar_month),
-            border: OutlineInputBorder(),
-            labelText: 'date of operation',
+          decoration: InputDecoration(
+            suffixIcon: const Icon(Icons.calendar_month),
+            border: const OutlineInputBorder(),
+            labelText: LocaleKeys.operationDateLabelText.tr(),
           ),
           onTap: () async {
             DateTime date = await selectDate(context);
             controller.text = date.toString();
-            operationChangeBloc
-                .add(ChangeOperationEvent(date: date));
+            operationChangeBloc.add(ChangeOperationEvent(date: date));
           },
         ),
       ],
@@ -236,11 +239,11 @@ class _FieldWidget extends StatelessWidget {
           onTap: () async {
             final operationBloc = context.read<OperationBloc>();
             final selectedText = await addDialog(
-              context: context,
-              text: controller.text,
-              operations: operationBloc.state.operations,
-              type: formType,
-            ) ??
+                  context: context,
+                  text: controller.text,
+                  operations: operationBloc.state.operations,
+                  type: formType,
+                ) ??
                 '';
             switch (formType) {
               case OperationModelFormType.date:
@@ -275,20 +278,19 @@ class _SumFieldWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Sum *',
-          style: TextStyle(fontSize: 20),
+        Text(
+          LocaleKeys.operationSumName.tr(),
+          style: const TextStyle(fontSize: 20),
         ),
         const SizedBox(
           height: 10,
         ),
         TextFormField(
           keyboardType: TextInputType.number,
-          initialValue: operationChangeBloc.state.sum.toString(),
-          decoration: const InputDecoration(
-            suffixIcon: Icon(Icons.money),
-            border: OutlineInputBorder(),
-            labelText: 'sum',
+          decoration: InputDecoration(
+            suffixIcon: const Icon(Icons.money),
+            border: const OutlineInputBorder(),
+            labelText: LocaleKeys.operationSumLabelText.tr(),
           ),
           onChanged: (value) {
             operationChangeBloc

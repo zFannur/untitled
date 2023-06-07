@@ -40,6 +40,5 @@ class OperationChangeState extends Equatable {
   }
 
   @override
-// TODO: implement props
   List<Object?> get props => [index, date, type, form, sum, note];
 }

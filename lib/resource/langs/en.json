@@ -1,0 +1,31 @@
+{
+  "routerScreenAppBarTitle": "Fin-plan",
+  "bottomBarStatistic": "statistic",
+  "bottomBarOperation": "operation",
+  "bottomBarPlan": "plan",
+
+
+  "operationAdd":  "ADD OPEARTION",
+  "operationFromTable":  "From table",
+  "operationToSend":  " for send: ",
+
+
+  "operationAddAppBarTitle":  "ADD OPEARTION",
+
+  "operationEditAppBarTitle":  "EDIT OPEARTION",
+
+  "operationDateName":  "Date",
+  "operationDateLabelText":  "date of operation",
+
+  "operationTypeName":  "Type",
+  "operationTypeLabelText":  "type of transaction",
+
+  "operationFormName":  "Form",
+  "operationFormLabelText":  "form of transaction",
+
+  "operationSumName":  "Sum",
+  "operationSumLabelText":  "Date",
+
+  "operationNoteName":  "Note",
+  "operationNoteLabelText":  "note of transaction"
+}

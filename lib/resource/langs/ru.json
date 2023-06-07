@@ -1,0 +1,31 @@
+{
+  "routerScreenAppBarTitle": "ФИН-ПЛАН",
+  "bottomBarStatistic": "статистика",
+  "bottomBarOperation": "операции",
+  "bottomBarPlan": "план",
+
+
+  "operationAdd":  "ДОБАВИТЬ ОПЕРАЦИЮ",
+  "operationFromTable":  "Из таблицы",
+  "operationToSend":  " для отправки: ",
+
+
+  "operationAddAppBarTitle":  "ДОБАВИТЬ ОПЕРАЦИЮ",
+
+  "operationEditAppBarTitle":  "РЕДАКТИРОВАТЬ ОПЕРАЦИЮ",
+
+  "operationDateName":  "Дата",
+  "operationDateLabelText":  "день добавления",
+
+  "operationTypeName":  "Тип",
+  "operationTypeLabelText":  "тип операции",
+
+  "operationFormName":  "Направление",
+  "operationFormLabelText":  "направление операции",
+
+  "operationSumName":  "Стоимость",
+  "operationSumLabelText":  "Стоимость операции",
+
+  "operationNoteName":  "Примечание",
+  "operationNoteLabelText":  "примечание для уточнения"
+}

@@ -1,7 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/resource/langs/locale_keys.g.dart';
 
 import '../../../bloc/operation_bloc/operation_bloc.dart';
 import '../../../bloc/operation_change_bloc/operation_change_bloc.dart';
@@ -61,6 +62,12 @@ class ShimmerButtonState extends State<ShimmerButton>
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _animationController.repeat(
       reverse: true,
@@ -115,9 +122,9 @@ class ShimmerButtonState extends State<ShimmerButton>
           ),
           Container(
             alignment: Alignment.center,
-            child: const Text(
-              'Add Operation',
-              style: TextStyle(
+            child: Text(
+              LocaleKeys.operationAdd.tr(),
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.0,
               ),
@@ -159,7 +166,7 @@ class _LeadingAppBarWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '${operationBloc.state.cacheLength} отправка',
+                '${LocaleKeys.operationToSend.tr()}${operationBloc.state.cacheLength}',
                 style: const TextStyle(color: Colors.red),
               )
             ],
@@ -178,8 +185,8 @@ class _LeadingAppBarWidget extends StatelessWidget {
                 ),
                 Text(
                   operationBloc.state.cacheLength == 0
-                  ? 'Из таблицы'
-                  : 'Из таблицы, отправка ${operationBloc.state.cacheLength}',
+                  ? LocaleKeys.operationFromTable.tr()
+                  : '${LocaleKeys.operationFromTable.tr()}${LocaleKeys.operationToSend.tr()} ${operationBloc.state.cacheLength}',
                   style: const TextStyle(color: Colors.blue),
                 )
               ],
