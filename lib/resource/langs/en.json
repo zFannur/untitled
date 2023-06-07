@@ -27,5 +27,7 @@
   "operationSumLabelText":  "Date",
 
   "operationNoteName":  "Note",
-  "operationNoteLabelText":  "note of transaction"
+  "operationNoteLabelText":  "note of transaction",
+
+  "operationMonthName":  "Month"
 }

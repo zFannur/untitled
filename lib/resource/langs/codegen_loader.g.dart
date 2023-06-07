@@ -33,7 +33,8 @@ class CodegenLoader extends AssetLoader{
   "operationSumName": "Sum",
   "operationSumLabelText": "Date",
   "operationNoteName": "Note",
-  "operationNoteLabelText": "note of transaction"
+  "operationNoteLabelText": "note of transaction",
+  "operationMonthName": "Month"
 };
 static const Map<String,dynamic> ru = {
   "routerScreenAppBarTitle": "ФИН-ПЛАН",
@@ -54,7 +55,8 @@ static const Map<String,dynamic> ru = {
   "operationSumName": "Стоимость",
   "operationSumLabelText": "Стоимость операции",
   "operationNoteName": "Примечание",
-  "operationNoteLabelText": "примечание для уточнения"
+  "operationNoteLabelText": "примечание для уточнения",
+  "operationMonthName": "Месяц"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": en, "ru": ru};
 }

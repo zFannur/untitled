@@ -27,5 +27,7 @@
   "operationSumLabelText":  "Стоимость операции",
 
   "operationNoteName":  "Примечание",
-  "operationNoteLabelText":  "примечание для уточнения"
+  "operationNoteLabelText":  "примечание для уточнения",
+
+  "operationMonthName":  "Месяц"
 }

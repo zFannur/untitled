@@ -20,5 +20,6 @@ abstract class  LocaleKeys {
   static const operationSumLabelText = 'operationSumLabelText';
   static const operationNoteName = 'operationNoteName';
   static const operationNoteLabelText = 'operationNoteLabelText';
+  static const operationMonthName = 'operationMonthName';
 
 }

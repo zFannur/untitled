@@ -1,9 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/resource/langs/locale_keys.g.dart';
+import '../../const/text_style.dart';
 import '../pages/operation_page/screens/operation_screen.dart';
 import '../pages/statistic_page/screens/statistic_screen.dart';
-import 'package:restart_app/restart_app.dart';
+//import 'package:restart_app/restart_app.dart';
 
 class RouterScreen extends StatefulWidget {
   const RouterScreen({Key? key}) : super(key: key);
@@ -26,17 +27,20 @@ class _RouterScreenState extends State<RouterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(LocaleKeys.routerScreenAppBarTitle.tr()),
+        title: Text(
+          LocaleKeys.routerScreenAppBarTitle.tr(),
+          style: kAppBarStyle,
+        ),
         actions: [
           IconButton(
-            onPressed: ()  {
+            onPressed: () {
               if (context.locale == const Locale('ru')) {
-                 context.setLocale(const Locale('en'));
+                context.setLocale(const Locale('en'));
               } else {
-                 context.setLocale(const Locale('ru'));
+                context.setLocale(const Locale('ru'));
               }
               //#TODO обновитьВиджетыБезПерезагрузки
-              Restart.restartApp();
+              //Restart.restartApp();
             },
             icon: const Icon(Icons.language),
           )
@@ -71,4 +75,3 @@ class _RouterScreenState extends State<RouterScreen> {
     );
   }
 }
-

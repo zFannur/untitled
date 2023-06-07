@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/resource/langs/locale_keys.g.dart';
 
+import '../../../../const/text_style.dart';
 import '../../../bloc/operation_bloc/operation_bloc.dart';
 import '../../../bloc/operation_change_bloc/operation_change_bloc.dart';
 import '../../../navigation/navigation.dart';
@@ -75,14 +76,14 @@ class ShimmerButtonState extends State<ShimmerButton>
     return MaterialButton(
       onPressed: () {
         context.read<OperationChangeBloc>().add(
-          ChangeOperationEvent(
-            date: DateTime.now(),
-            type: '',
-            form: '',
-            sum: 0,
-            note: '',
-          ),
-        );
+              ChangeOperationEvent(
+                date: DateTime.now(),
+                type: '',
+                form: '',
+                sum: 0,
+                note: '',
+              ),
+            );
         Navigator.of(context).pushNamed(RouteNames.addOperation);
       },
       textColor: Colors.white,
@@ -167,7 +168,7 @@ class _LeadingAppBarWidget extends StatelessWidget {
               ),
               Text(
                 '${LocaleKeys.operationToSend.tr()}${operationBloc.state.cacheLength}',
-                style: const TextStyle(color: Colors.red),
+                style: kRedTextStyle,
               )
             ],
           )
@@ -185,9 +186,9 @@ class _LeadingAppBarWidget extends StatelessWidget {
                 ),
                 Text(
                   operationBloc.state.cacheLength == 0
-                  ? LocaleKeys.operationFromTable.tr()
-                  : '${LocaleKeys.operationFromTable.tr()}${LocaleKeys.operationToSend.tr()} ${operationBloc.state.cacheLength}',
-                  style: const TextStyle(color: Colors.blue),
+                      ? LocaleKeys.operationFromTable.tr()
+                      : '${LocaleKeys.operationFromTable.tr()}${LocaleKeys.operationToSend.tr()} ${operationBloc.state.cacheLength}',
+                  style: kBlueTextStyle,
                 )
               ],
             ),
@@ -227,10 +228,17 @@ class _ListOperationsWidget extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Column(
-                      children: [Text(operation.type), Text(operation.form)],
+                      children: [
+                        Text(operation.type),
+                        Text(operation.form),
+                      ],
                     ),
                   ),
-                  Expanded(child: Text(operation.sum.toString())),
+                  Expanded(
+                    child: Text(
+                      operation.sum.toString(),
+                    ),
+                  ),
                   Expanded(
                     child: IconButton(
                       // edit button
