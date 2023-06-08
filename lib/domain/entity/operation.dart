@@ -72,3 +72,10 @@ enum OperationModelFormType {
   form,
   note,
 }
+
+class FilteredOperations {
+  final int summa;
+  final String form;
+
+  const FilteredOperations({this.summa = 0, this.form = ''});
+}

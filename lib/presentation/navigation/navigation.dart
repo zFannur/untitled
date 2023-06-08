@@ -7,6 +7,7 @@ class RouteNames {
   static String navigationBar = '/';
   static String addOperation = '/addOperation';
   static String editOperation = '/editOperation';
+
 }
 
 class Navigation {
