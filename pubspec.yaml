@@ -49,7 +49,8 @@ dependencies:
   json_annotation: ^4.8.1 #для главления json
   const_date_time: ^1.0.2 #онстантные даты
   easy_localization: ^3.0.2 #для локализации
-  restart_app: ^1.2.1
+  restart_app: ^1.2.1 #для перезагрузки приложения
+  adaptive_theme: ^3.3.0 #для настройки темы
 
 
 dev_dependencies:

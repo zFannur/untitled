@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/resource/langs/locale_keys.g.dart';
@@ -23,27 +24,88 @@ class _RouterScreenState extends State<RouterScreen> {
     });
   }
 
+  void toggleThemeMode() {
+    if (AdaptiveTheme.of(context).theme ==
+        AdaptiveTheme.of(context).darkTheme) {
+      AdaptiveTheme.of(context).setLight();
+    } else {
+      AdaptiveTheme.of(context).setDark();
+    }
+    //AdaptiveTheme.of(context).toggleThemeMode();
+  }
+
   @override
   Widget build(BuildContext context) {
+    //final List<bool> _selectedWeather = <bool>[false, true];
     return Scaffold(
       appBar: AppBar(
         title: Text(
           LocaleKeys.routerScreenAppBarTitle.tr(),
           style: kAppBarStyle,
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
+        actions: <Widget>[
+          PopupMenuButton(itemBuilder: (context) {
+            return [
+              PopupMenuItem<int>(
+                value: 0,
+                child: Row(
+                  children: [
+                    const Icon(Icons.language),
+                    context.locale == const Locale('ru')
+                        ? const Text(' - RU')
+                        : const Text(' - EN'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<int>(
+                value: 1,
+                child: Text('ToggleTheme'),
+                // ToggleButtons(
+                //   onPressed: (int index) {
+                //     if (index == 0) {
+                //       _selectedWeather[0] = 0 == index;
+                //       AdaptiveTheme.of(context).setLight();
+                //     } else if (index == 1) {
+                //       _selectedWeather[1] = 1 == index;
+                //       AdaptiveTheme.of(context).setDark();
+                //     }
+                //   },
+                //   borderRadius: const BorderRadius.all(Radius.circular(8)),
+                //   selectedBorderColor: Colors.green[700],
+                //   selectedColor: Colors.white,
+                //   fillColor: Colors.green[200],
+                //   color: Colors.green[400],
+                //   constraints: const BoxConstraints(
+                //     minHeight: 40.0,
+                //     minWidth: 80.0,
+                //   ),
+                //   isSelected: _selectedWeather,
+                //   children: const [
+                //     Icon(Icons.light_mode_outlined),
+                //     Icon(Icons.light_mode),
+                //   ],
+                // ),
+              ),
+              const PopupMenuItem<int>(
+                value: 2,
+                child: Text("Logout"),
+              ),
+            ];
+          }, onSelected: (value) async {
+            if (value == 0) {
               if (context.locale == const Locale('ru')) {
-                context.setLocale(const Locale('en'));
+                await context.setLocale(const Locale('en'));
               } else {
-                context.setLocale(const Locale('ru'));
+                await context.setLocale(const Locale('ru'));
               }
               //#TODO обновитьВиджетыБезПерезагрузки
               //Restart.restartApp();
-            },
-            icon: const Icon(Icons.language),
-          )
+            } else if (value == 1) {
+              toggleThemeMode();
+            } else if (value == 2) {
+              print("Logout menu is selected.");
+            }
+          }),
         ],
       ),
       body: IndexedStack(

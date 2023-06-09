@@ -15,7 +15,7 @@ class CodegenLoader extends AssetLoader{
   }
 
   static const Map<String,dynamic> en = {
-  "routerScreenAppBarTitle": "Fin-plan",
+  "routerScreenAppBarTitle": "FIN-PLAN",
   "bottomBarStatistic": "statistic",
   "bottomBarOperation": "operation",
   "bottomBarPlan": "plan",
