@@ -20,7 +20,7 @@ class AddOperationScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           LocaleKeys.operationAddAppBarTitle.tr(),
-          style: TextStyle(fontSize: 20),
+          style: const TextStyle(fontSize: 20),
         ),
       ),
       body: SingleChildScrollView(

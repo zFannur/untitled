@@ -5,7 +5,6 @@ import 'package:untitled/resource/langs/locale_keys.g.dart';
 import '../../const/text_style.dart';
 import '../pages/operation_page/screens/operation_screen.dart';
 import '../pages/statistic_page/screens/statistic_screen.dart';
-//import 'package:restart_app/restart_app.dart';
 
 class RouterScreen extends StatefulWidget {
   const RouterScreen({Key? key}) : super(key: key);
@@ -52,8 +51,8 @@ class _RouterScreenState extends State<RouterScreen> {
                   children: [
                     const Icon(Icons.language),
                     context.locale == const Locale('ru')
-                        ? const Text(' - RU')
-                        : const Text(' - EN'),
+                        ? const Text(' - EN')
+                        : const Text(' - RU'),
                   ],
                 ),
               ),
@@ -98,8 +97,7 @@ class _RouterScreenState extends State<RouterScreen> {
               } else {
                 await context.setLocale(const Locale('ru'));
               }
-              //#TODO обновитьВиджетыБезПерезагрузки
-              //Restart.restartApp();
+              setState(() {});
             } else if (value == 1) {
               toggleThemeMode();
             } else if (value == 2) {
@@ -111,8 +109,8 @@ class _RouterScreenState extends State<RouterScreen> {
       body: IndexedStack(
         index: _selectedPage,
         children: [
-          const StatisticScreen(),
-          const OperationScreen(), // операции
+          StatisticScreen(key: UniqueKey()),
+          OperationScreen(key: UniqueKey()),
           Text(LocaleKeys.bottomBarPlan.tr()), // планирование
         ],
       ),

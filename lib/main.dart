@@ -1,8 +1,8 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/presentation/internal/application.dart';
 import 'package:untitled/resource/langs/codegen_loader.g.dart';
+import 'internal/application.dart';
 import 'locator_service/locator_service.dart';
 
 void main() async {

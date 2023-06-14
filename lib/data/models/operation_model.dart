@@ -1,4 +1,4 @@
-class OperationApi {
+class OperationModel {
   int id;
   String action;
   String date;
@@ -7,7 +7,7 @@ class OperationApi {
   int sum;
   String note;
 
-  OperationApi(
+  OperationModel(
       {required this.id,
         required this.action,
         required this.date,
@@ -16,7 +16,7 @@ class OperationApi {
         required this.sum,
         required this.note});
 
-  static OperationApi fromJson(json) => OperationApi(
+  static OperationModel fromJson(json) => OperationModel(
     id: json['id'] as int,
     action: json['action'] as String,
     date: json['date'] as String,

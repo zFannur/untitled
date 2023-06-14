@@ -1,4 +1,4 @@
-import 'package:untitled/data/models/operation_api.dart';
+import 'package:untitled/data/models/operation_model.dart';
 import '../../domain/entity/operation.dart';
 import 'operation_hive.dart';
 
@@ -7,7 +7,7 @@ import 'operation_hive.dart';
 
 class ConvertOperation {
 
-  static List<Operation> operationApiToOperationList(List<OperationApi> operationsApi) {
+  static List<Operation> operationApiToOperationList(List<OperationModel> operationsApi) {
     List<Operation> result = [];
 
     for (int i = 0; i < operationsApi.length; i++) {
@@ -25,8 +25,8 @@ class ConvertOperation {
     return result;
   }
 
-  static OperationApi operationToOperationApi(Operation operation) {
-    final operationApi = OperationApi(
+  static OperationModel operationToOperationApi(Operation operation) {
+    final operationApi = OperationModel(
       id: operation.id,
       action: operation.action,
       date: operation.date,
