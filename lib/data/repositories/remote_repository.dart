@@ -12,15 +12,16 @@ const uri =
     "https://script.google.com/macros/s/AKfycbySJsChZ2hhhjSqc5V_MPdic2rSMzhBIqs1MFSHsOi_Gpxl5UKR_t-pIPHlZHSF1EQrhg/exec";
 
 class RemoteRepositoryImpl extends RemoteRepository {
-  final Dio httpClient;
-  RemoteRepositoryImpl({required this.httpClient});
+  RemoteRepositoryImpl();
 
   @override
   Future<List<Operation>> getOperation() async {
 
     try {
-      final response = await httpClient.get(uri);
-      return ConvertOperation.operationApiToOperationList((response.data as List).map((json) => OperationModel.fromJson(json)).toList());
+      return await http.get(Uri.parse(uri)).then((response) {
+        var jsonForm = convert.jsonDecode(response.body) as List;
+        return ConvertOperation.operationApiToOperationList(jsonForm.map((json) => OperationModel.fromJson(json)).toList());
+      });
     } catch (e) {
       rethrow;
     }

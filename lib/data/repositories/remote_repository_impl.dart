@@ -1,63 +1,38 @@
 import 'package:dio/dio.dart';
-import 'package:untitled/data/network/api/operation/operation_api.dart';
 import 'package:untitled/domain/entity/operation.dart';
 import 'package:untitled/domain/repository/remote_repository.dart';
 
 import '../models/converter.dart';
 import '../models/operation_model.dart';
+import '../network/api/constant/endpoints.dart';
 import '../network/dio_exception.dart';
 
+class RemoteRepositoryImplNew extends RemoteRepository {
+  final Dio _dio;
 
-class RemoteRepositoryImplNew extends RemoteRepository{
-  final OperationApi operationApi;
-
-  RemoteRepositoryImplNew(this.operationApi);
-
-  Future<List<Operation>> getOperationRequested() async {
-    try {
-      final response = await operationApi.getOperationApi();
-      final operations = ConvertOperation.operationApiToOperationList((response.data as List).map((json) => OperationModel.fromJson(json)).toList());
-      return operations;
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      throw errorMessage;
-    }
-  }
-
-  Future<Operation> addOperationRequested(Operation operation) async {
-    try {
-      final response = await operationApi.addOperationApi(operation);
-      return Operation.fromJson(response.data);
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      throw errorMessage;
-    }
-  }
-
-  Future<Operation> updateOperationRequested(Operation operation) async {
-    try {
-      final response = await operationApi.updateOperationApi(operation);
-      return Operation.fromJson(response.data);
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      throw errorMessage;
-    }
-  }
-
-  Future<void> deleteOperationRequested(int id) async {
-    try {
-      await operationApi.deleteOperationApi(id);
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      throw errorMessage;
-    }
+  RemoteRepositoryImplNew(this._dio) {
+    // _dio
+    // //..options.baseUrl = Endpoints.baseUrl
+    //   ..options.connectTimeout = Endpoints.connectionTimeout
+    //   ..options.receiveTimeout = Endpoints.receiveTimeout
+    //   ..options.responseType = ResponseType.json
+    //   ..interceptors.add(LogInterceptor(
+    //     request: true,
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseHeader: true,
+    //     responseBody: true,
+    //   ));
   }
 
   @override
   Future<List<Operation>> getOperation() async {
     try {
-      final response = await operationApi.getOperationApi();
-      final operations = ConvertOperation.operationApiToOperationList((response.data as List).map((json) => OperationModel.fromJson(json)).toList());
+      final response = await _dio.get(Endpoints.baseUrl);
+      final operations = ConvertOperation.operationApiToOperationList(
+          (response.data as List)
+              .map((json) => OperationModel.fromJson(json))
+              .toList());
       return operations;
     } on DioException catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
@@ -68,19 +43,29 @@ class RemoteRepositoryImplNew extends RemoteRepository{
   @override
   Future<String> postOperation(Operation operation) async {
     String status = '';
+    final operationModel = ConvertOperation.operationToOperationApi(operation);
 
+    final json = operationModel.toJson();
     try {
-      final response = await operationApi.addOperationApi(operation);
-      if (response.statusCode == 302) {
-        // var unary = Uri.parse(response.headers);
-        // await http.get(unary).then((response) {
-        //   status = (convert.jsonDecode(response.body)['status']);
-        // });
-      } else {
-        status =  'StatusCodeError';
-      }
+      await _dio.postUri(
+        Uri.parse(Endpoints.baseUrl),
+        data: json,
+      );
+
       return status;
+
     } on DioException catch (e) {
+
+      if (e.type == DioExceptionType.badResponse) {
+        if (e.response?.statusCode == 302) {
+          var unary = e.response?.headers?.map['location']?.first as String;
+          final response = await _dio.get(unary);
+          return status = response.data['status'] as String;
+        } else {
+          return status = 'FAILED';
+        }
+      }
+
       final errorMessage = DioExceptions.fromDioError(e).toString();
       throw errorMessage;
     }
