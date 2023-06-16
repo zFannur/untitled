@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:untitled/data/repositories/local_repository.dart';
-import 'package:untitled/data/repositories/remote_repository.dart';
+import 'package:untitled/data/repositories/local_repository_impl.dart';
 import 'package:untitled/data/repositories/remote_repository_impl.dart';
+import 'package:untitled/data/repositories/remote_repository_impl_dio.dart';
 import 'package:untitled/domain/repository/local_repository.dart';
 import 'package:untitled/domain/repository/remote_repository.dart';
 import 'package:untitled/domain/use_case/operation_use_case.dart';
