@@ -15,7 +15,7 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
   final OperationUseCase operationUseCase;
   late final StreamSubscription operationBlocSubscription;
 
-  OperationBloc({required this.operationUseCase})
+  OperationBloc(this.operationUseCase)
       : super(const OperationState()) {
     on<GetOperationEvent>(_onGetOperationEvent);
     on<SendOperationEvent>(_onSendOperationEvent);

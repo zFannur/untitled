@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:untitled/domain/entity/operation.dart';
+import 'package:untitled/domain/entity/plan.dart';
 import 'package:untitled/domain/repository/remote_repository.dart';
 
 import '../models/converter.dart';
@@ -28,7 +29,7 @@ class RemoteRepositoryImplDio extends RemoteRepository {
   @override
   Future<List<Operation>> getOperation() async {
     try {
-      final response = await _dio.get(Endpoints.baseUrl);
+      final response = await _dio.get(Endpoints.operationUrl);
       final operations = ConvertOperation.operationApiToOperationList(
           (response.data as List)
               .map((json) => OperationModel.fromJson(json))
@@ -48,7 +49,7 @@ class RemoteRepositoryImplDio extends RemoteRepository {
     final json = operationModel.toJson();
     try {
       await _dio.postUri(
-        Uri.parse(Endpoints.baseUrl),
+        Uri.parse(Endpoints.operationUrl),
         data: json,
       );
 
@@ -69,5 +70,19 @@ class RemoteRepositoryImplDio extends RemoteRepository {
       final errorMessage = DioExceptions.fromDioError(e).toString();
       throw errorMessage;
     }
+  }
+
+
+
+  @override
+  Future<List<Plan>> getPlan() {
+    // TODO: implement getPlan
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> postPlan(Operation operation) {
+    // TODO: implement postPlan
+    throw UnimplementedError();
   }
 }

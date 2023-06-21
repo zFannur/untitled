@@ -8,9 +8,12 @@ import 'package:untitled/domain/repository/local_repository.dart';
 import 'package:untitled/domain/repository/remote_repository.dart';
 import 'package:untitled/domain/use_case/operation_use_case.dart';
 import 'package:untitled/domain/use_case/operation_use_case_impl.dart';
+import 'package:untitled/domain/use_case/plan_use_case_impl.dart';
 import 'package:untitled/presentation/bloc/operation_bloc/operation_bloc.dart';
 import 'package:untitled/presentation/bloc/operation_change_bloc/operation_change_bloc.dart';
+import 'package:untitled/presentation/bloc/plan_bloc/plan_bloc.dart';
 import '../bloc_observable.dart';
+import '../domain/use_case/plan_use_case.dart';
 import '../presentation/bloc/statistic_bloc/statistic_bloc.dart';
 
 GetIt getIt = GetIt.instance;
@@ -32,9 +35,14 @@ Future<void> init() async {
         localRepository: getIt<LocalRepository>(),
         remoteRepository: getIt<RemoteRepository>(),
       ));
+  getIt.registerFactory<PlanUseCase>(() => PlanUseCaseImpl(
+    localRepository: getIt<LocalRepository>(),
+    remoteRepository: getIt<RemoteRepository>(),
+  ));
 
   //presentation
-  getIt.registerSingleton(OperationBloc(operationUseCase: getIt<OperationUseCase>()));
+  getIt.registerSingleton(OperationBloc(getIt<OperationUseCase>()));
   getIt.registerSingleton(OperationChangeBloc());
   getIt.registerSingleton(StatisticBloc());
+  getIt.registerSingleton(PlanBloc(getIt<PlanUseCase>()));
 }

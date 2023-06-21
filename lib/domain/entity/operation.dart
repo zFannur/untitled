@@ -59,13 +59,6 @@ class Operation extends Equatable {
   Map<String, dynamic> toJson() => _$OperationToJson(this);
 }
 
-class Argument {
-  List<Operation> operations;
-  int index;
-
-  Argument({required this.operations, required this.index});
-}
-
 enum OperationModelFormType {
   date,
   type,

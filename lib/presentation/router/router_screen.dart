@@ -1,9 +1,11 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/presentation/widget/appbar_send_status.dart';
 import 'package:untitled/resource/langs/locale_keys.g.dart';
 import '../../const/text_style.dart';
 import '../pages/operation_page/screens/operation_screen.dart';
+import '../pages/plan_page/screens/plan_screen.dart';
 import '../pages/statistic_page/screens/statistic_screen.dart';
 
 class RouterScreen extends StatefulWidget {
@@ -30,7 +32,6 @@ class _RouterScreenState extends State<RouterScreen> {
     } else {
       AdaptiveTheme.of(context).setDark();
     }
-    //AdaptiveTheme.of(context).toggleThemeMode();
   }
 
   @override
@@ -43,6 +44,7 @@ class _RouterScreenState extends State<RouterScreen> {
           style: kAppBarStyle,
         ),
         actions: <Widget>[
+          AppBarSendStatus(key: UniqueKey()),
           PopupMenuButton(itemBuilder: (context) {
             return [
               PopupMenuItem<int>(
@@ -111,7 +113,7 @@ class _RouterScreenState extends State<RouterScreen> {
         children: [
           StatisticScreen(key: UniqueKey()),
           OperationScreen(key: UniqueKey()),
-          Text(LocaleKeys.bottomBarPlan.tr()), // планирование
+          PlanScreen(key: UniqueKey()), // планирование
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

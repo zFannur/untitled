@@ -5,8 +5,8 @@ import '../../../../domain/entity/operation.dart';
 import '../../../../resource/langs/locale_keys.g.dart';
 import '../../../bloc/operation_bloc/operation_bloc.dart';
 import '../../../bloc/statistic_bloc/statistic_bloc.dart';
-import '../widget/calc.dart';
-import '../widget/dropdown_button_widget.dart';
+import '../../../widget/calc.dart';
+import '../../../widget/dropdown_button_widget.dart';
 
 class StatisticDetailListWidget extends StatelessWidget {
   final FilteredOperations filteredOperations;
@@ -57,16 +57,22 @@ class StatisticDetailListWidget extends StatelessWidget {
                     children: [
                       DropdownButtonWidget(
                         list: note,
-                        type: OperationModelFormType.note,
+                        value: statisticBloc.state.selectedNote,
                         text: LocaleKeys.operationNoteName.tr(),
+                        onChanged: (String? value) {
+                          statisticBloc.add(ChangeStatisticEvent(selectedNote: value!));
+                        },
                       ),
                       const SizedBox(
                         width: 20,
                       ),
                       DropdownButtonWidget(
                         list: month,
-                        type: OperationModelFormType.date,
+                        value: statisticBloc.state.selectedDate,
                         text: LocaleKeys.operationDateName.tr(),
+                        onChanged: (String? value) {
+                          statisticBloc.add(ChangeStatisticEvent(selectedDate: value!));
+                        },
                       ),
                     ],
                   ),

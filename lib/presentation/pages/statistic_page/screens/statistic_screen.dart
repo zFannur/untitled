@@ -7,8 +7,8 @@ import 'package:untitled/resource/langs/locale_keys.g.dart';
 
 import '../../../../domain/entity/operation.dart';
 import '../../../bloc/operation_bloc/operation_bloc.dart';
-import '../widget/calc.dart';
-import '../widget/dropdown_button_widget.dart';
+import '../../../widget/calc.dart';
+import '../../../widget/dropdown_button_widget.dart';
 import 'detail_screen.dart';
 
 class StatisticScreen extends StatelessWidget {
@@ -43,6 +43,7 @@ class _StatisticListWidget extends StatelessWidget {
 
     final List<String> month = Calc.getUniValuesFromList(
         operationBloc.state.operations, OperationModelFormType.date);
+    //final List<String> type = Set<String>.from(operationBloc.state.operations.map((e) => e.type.toString()).toSet()).toList();
     month.add('пусто');
     final List<String> type = Calc.getUniValuesFromList(
         operationBloc.state.operations, OperationModelFormType.type);
@@ -58,14 +59,22 @@ class _StatisticListWidget extends StatelessWidget {
                   children: [
                     DropdownButtonWidget(
                       list: month,
-                      type: OperationModelFormType.date,
+                      value: statisticBloc.state.selectedDate,
                       text: LocaleKeys.operationMonthName.tr(),
+                      onChanged: (String? value) {
+                        statisticBloc
+                            .add(ChangeStatisticEvent(selectedDate: value!));
+                      },
                     ),
                     const SizedBox(width: 20),
                     DropdownButtonWidget(
                       list: type,
-                      type: OperationModelFormType.type,
+                      value: statisticBloc.state.selectedType,
                       text: LocaleKeys.operationTypeName.tr(),
+                      onChanged: (String? value) {
+                        statisticBloc
+                            .add(ChangeStatisticEvent(selectedType: value!));
+                      },
                     ),
                   ],
                 ),

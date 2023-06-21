@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../domain/entity/operation.dart';
-import '../../../bloc/statistic_bloc/statistic_bloc.dart';
+import '../bloc/statistic_bloc/statistic_bloc.dart';
 
 class Calc {
   static List<Operation> sumNote({

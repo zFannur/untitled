@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/resource/langs/locale_keys.g.dart';
 
-import '../../../../const/text_style.dart';
 import '../../../bloc/operation_bloc/operation_bloc.dart';
 import '../../../bloc/operation_change_bloc/operation_change_bloc.dart';
 import '../../../navigation/navigation.dart';
@@ -19,14 +18,6 @@ class OperationScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _LeadingAppBarWidget(),
-            _AppBarActionWidget(),
-          ],
-        ),
         if (operationBloc.state.isLoading)
           const Center(child: CircularProgressIndicator())
         else
@@ -137,65 +128,6 @@ class ShimmerButtonState extends State<ShimmerButton>
   }
 }
 
-class _AppBarActionWidget extends StatelessWidget {
-  const _AppBarActionWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final operationBloc = context.watch<OperationBloc>();
-    return operationBloc.state.internetConnected
-        ? const Text('')
-        : const Icon(Icons.signal_wifi_connected_no_internet_4_outlined);
-  }
-}
-
-class _LeadingAppBarWidget extends StatelessWidget {
-  const _LeadingAppBarWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final operationBloc = context.watch<OperationBloc>();
-    return operationBloc.state.isSend
-        ? Row(
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.file_upload,
-                  size: 35,
-                  color: Colors.red,
-                ),
-              ),
-              Text(
-                '${LocaleKeys.operationToSend.tr()}${operationBloc.state.cacheLength}',
-                style: kRedTextStyle,
-              )
-            ],
-          )
-        : ElevatedButton(
-            style: const ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
-            ),
-            onPressed: () => operationBloc.add(GetOperationEvent()),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.download,
-                  size: 35,
-                  color: Colors.blue,
-                ),
-                Text(
-                  operationBloc.state.cacheLength == 0
-                      ? LocaleKeys.operationFromTable.tr()
-                      : '${LocaleKeys.operationFromTable.tr()}${LocaleKeys.operationToSend.tr()} ${operationBloc.state.cacheLength}',
-                  style: kBlueTextStyle,
-                )
-              ],
-            ),
-          );
-  }
-}
-
 class _ListOperationsWidget extends StatelessWidget {
   const _ListOperationsWidget({Key? key}) : super(key: key);
 
@@ -213,69 +145,85 @@ class _ListOperationsWidget extends StatelessWidget {
             final operation = operationBloc.state.operations[index];
             DateTime dateTime = dateFormat.parse(operation.date);
 
-            return Card(
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 65,
-                    child: Center(
-                      child: Text('${dateTime.day}:${dateTime.month}'
-                          //operation.date,
-                          //'${DateTime.parse(operation.date).day}:${DateTime.parse(operation.date).month}:${DateTime.parse(operation.date).year}',
-                          ),
-                    ),
+            return InkWell(
+              onTap: () {
+                context.read<OperationChangeBloc>().add(
+                  ChangeOperationEvent(
+                    index: index,
+                    date: dateTime,
+                    type: operation.type,
+                    form: operation.form,
+                    sum: operation.sum,
+                    note: operation.note,
                   ),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      children: [
-                        Text(operation.type),
-                        Text(operation.form),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      operation.sum.toString(),
-                    ),
-                  ),
-                  Expanded(
-                    child: IconButton(
-                      // edit button
-                      onPressed: () {
-                        context.read<OperationChangeBloc>().add(
-                              ChangeOperationEvent(
-                                index: index,
-                                date: dateTime,
-                                type: operation.type,
-                                form: operation.form,
-                                sum: operation.sum,
-                                note: operation.note,
-                              ),
-                            );
-                        Navigator.of(context)
-                            .pushNamed(RouteNames.editOperation);
-                      },
-                      icon: const Icon(
-                        Icons.edit,
-                        color: Colors.grey,
+                );
+                Navigator.of(context)
+                    .pushNamed(RouteNames.editOperation);
+              },
+              child: Card(
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 65,
+                      child: Center(
+                        child: Text('${dateTime.day}:${dateTime.month}'
+                            //operation.date,
+                            //'${DateTime.parse(operation.date).day}:${DateTime.parse(operation.date).month}:${DateTime.parse(operation.date).year}',
+                            ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: IconButton(
-                      // delete button
-                      onPressed: () {
-                        operationBloc.add(DeleteOperationEvent(
-                            index: index, id: operation.id));
-                      },
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.red,
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        children: [
+                          Text(operation.type),
+                          Text(operation.form),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: Text(
+                        operation.sum.toString(),
+                      ),
+                    ),
+                    // Expanded(
+                    //   child: IconButton(
+                    //     // edit button
+                    //     onPressed: () {
+                    //       context.read<OperationChangeBloc>().add(
+                    //             ChangeOperationEvent(
+                    //               index: index,
+                    //               date: dateTime,
+                    //               type: operation.type,
+                    //               form: operation.form,
+                    //               sum: operation.sum,
+                    //               note: operation.note,
+                    //             ),
+                    //           );
+                    //       Navigator.of(context)
+                    //           .pushNamed(RouteNames.editOperation);
+                    //     },
+                    //     icon: const Icon(
+                    //       Icons.edit,
+                    //       color: Colors.grey,
+                    //     ),
+                    //   ),
+                    // ),
+                    Expanded(
+                      child: IconButton(
+                        // delete button
+                        onPressed: () {
+                          operationBloc.add(DeleteOperationEvent(
+                              index: index, id: operation.id));
+                        },
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },

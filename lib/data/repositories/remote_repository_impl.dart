@@ -1,3 +1,5 @@
+import 'package:untitled/data/models/plan_model.dart';
+import 'package:untitled/data/network/api/constant/endpoints.dart';
 import 'package:untitled/domain/entity/operation.dart';
 
 import 'package:untitled/domain/repository/remote_repository.dart';
@@ -7,8 +9,7 @@ import 'dart:convert' as convert;
 import 'package:untitled/data/models/converter.dart';
 import 'package:untitled/data/models/operation_model.dart';
 
-const uri =
-    "https://script.google.com/macros/s/AKfycbySJsChZ2hhhjSqc5V_MPdic2rSMzhBIqs1MFSHsOi_Gpxl5UKR_t-pIPHlZHSF1EQrhg/exec";
+import '../../domain/entity/plan.dart';
 
 class RemoteRepositoryImpl extends RemoteRepository {
   RemoteRepositoryImpl();
@@ -17,7 +18,7 @@ class RemoteRepositoryImpl extends RemoteRepository {
   Future<List<Operation>> getOperation() async {
 
     try {
-      return await http.get(Uri.parse(uri)).then((response) {
+      return await http.get(Uri.parse(Endpoints.operationUrl)).then((response) {
         var jsonForm = convert.jsonDecode(response.body) as List;
         return ConvertOperation.operationApiToOperationList(jsonForm.map((json) => OperationModel.fromJson(json)).toList());
       });
@@ -32,7 +33,7 @@ class RemoteRepositoryImpl extends RemoteRepository {
     String status = '';
 
     try {
-      final url = Uri.parse(uri);
+      final url = Uri.parse(Endpoints.operationUrl);
 
       var json = operationApi.toJson();
 
@@ -50,6 +51,28 @@ class RemoteRepositoryImpl extends RemoteRepository {
       status = 'error';
     }
     return status;
+  }
+
+
+
+  @override
+  Future<List<Plan>> getPlan() async {
+    try {
+      return await http.get(Uri.parse(Endpoints.planUrl)).then((response) {
+        var jsonForm = convert.jsonDecode(response.body) as List;
+        final planModel = jsonForm.map((json) => PlanModel.fromJson(json)).toList();
+        final plans = planModel.map((e) => Plan(date: e.date, name: e.name, sum: e.sum, id: e.id)).toList();
+        return plans;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String> postPlan(Operation operation) {
+    // TODO: implement postPlan
+    throw UnimplementedError();
   }
 
 }
