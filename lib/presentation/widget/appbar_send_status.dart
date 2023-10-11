@@ -37,7 +37,7 @@ class AppBarSendStatus extends StatelessWidget {
           )
         : TextButton(
             onPressed: () {
-              operationBloc.add(GetOperationEvent());
+              operationBloc.add(GetSheetOperationEvent());
               planBloc.add(GetPlanEvent());
             },
             child: Row(

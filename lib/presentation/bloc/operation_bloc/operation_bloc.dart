@@ -18,6 +18,7 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
   OperationBloc(this.operationUseCase)
       : super(const OperationState()) {
     on<GetOperationEvent>(_onGetOperationEvent);
+    on<GetSheetOperationEvent>(_onGetSheetOperationEvent);
     on<SendOperationEvent>(_onSendOperationEvent);
     on<DeleteOperationEvent>(_onDeleteOperationEvent);
     on<AddOperationEvent>(_onAddOperationEvent);
@@ -54,6 +55,15 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     emit(state.copyWith(isLoading: true));
 
     List<Operation> operations = await operationUseCase.getOperation();
+
+    emit(state.copyWith(operations: operations, isLoading: false));
+  }
+
+  _onGetSheetOperationEvent(
+      GetSheetOperationEvent event, Emitter<OperationState> emit) async {
+    emit(state.copyWith(isLoading: true));
+
+    List<Operation> operations = await operationUseCase.getSheetOperation();
 
     emit(state.copyWith(operations: operations, isLoading: false));
   }

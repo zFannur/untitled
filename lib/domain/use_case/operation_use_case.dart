@@ -4,6 +4,8 @@ abstract class OperationUseCase {
 
   Future<List<Operation>> getOperation();
 
+  Future<List<Operation>> getSheetOperation();
+
   void deleteOperation(int index, int id);
 
   List<Operation> editOperation({

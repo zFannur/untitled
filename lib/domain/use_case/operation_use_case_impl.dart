@@ -40,7 +40,7 @@ class OperationUseCaseImpl extends OperationUseCase {
     localRepository.addOperation(operation);
     localRepository.addCache(operation);
 
-    return await onSortOperation(localRepository.getOperation());
+    return localRepository.getOperation();
   }
 
   @override
@@ -90,23 +90,41 @@ class OperationUseCaseImpl extends OperationUseCase {
     List<Operation> remote = [];
 
     try {
-      local = await onSortOperation(localRepository.getOperation());
+      local = localRepository.getOperation();
+
+      final isConnect = await InternetConnectionChecker().hasConnection;
+
+      if (isConnect && local.isEmpty) {
+        remote = await remoteRepository.getOperation();
+        await localRepository.deleteAllOperation();
+        await localRepository.addOperationList(remote);
+        return remote;
+      } else {
+        return local;
+      }
+
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<List<Operation>> getSheetOperation() async {
+    List<Operation> local = [];
+    List<Operation> remote = [];
+
+    try {
+      //local = await onSortOperation(localRepository.getOperation());
 
       final isConnect = await InternetConnectionChecker().hasConnection;
 
       if (isConnect) {
-        remote = await onSortOperation(await remoteRepository.getOperation());
-      }
-
-      if (remote.isEmpty) {
-        return local;
-      } else if (local.length == remote.length) {
-        return local;
-      } else {
+        remote = await remoteRepository.getOperation();
         await localRepository.deleteAllOperation();
         await localRepository.addOperationList(remote);
-        return remote;
       }
+
+      return local;
     } catch (_) {
       return [];
     }

@@ -7,6 +7,7 @@ import 'package:untitled/resource/langs/locale_keys.g.dart';
 import '../../../bloc/operation_bloc/operation_bloc.dart';
 import '../../../bloc/operation_change_bloc/operation_change_bloc.dart';
 import '../../../navigation/navigation.dart';
+import '../../../widget/shimmer_button.dart';
 
 class OperationScreen extends StatelessWidget {
   const OperationScreen({Key? key}) : super(key: key);
@@ -18,112 +19,27 @@ class OperationScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        const SizedBox(),
         if (operationBloc.state.isLoading)
           const Center(child: CircularProgressIndicator())
         else
           const _ListOperationsWidget(),
-        const ShimmerButton(),
-      ],
-    );
-  }
-}
-
-class ShimmerButton extends StatefulWidget {
-  const ShimmerButton({super.key});
-
-  @override
-  ShimmerButtonState createState() => ShimmerButtonState();
-}
-
-class ShimmerButtonState extends State<ShimmerButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<Color?> _colorAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController =
-        AnimationController(duration: const Duration(seconds: 5), vsync: this);
-    _colorAnimation =
-        ColorTween(begin: Colors.lightGreen[100], end: Colors.lightGreen)
-            .animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _animationController.repeat(
-      reverse: true,
-    );
-    return MaterialButton(
-      onPressed: () {
-        context.read<OperationChangeBloc>().add(
-              ChangeOperationEvent(
-                date: DateTime.now(),
-                type: '',
-                form: '',
-                sum: 0,
-                note: '',
-              ),
-            );
-        Navigator.of(context).pushNamed(RouteNames.addOperation);
-      },
-      textColor: Colors.white,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: _colorAnimation,
-            builder: (context, child) => Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: _colorAnimation.value!.withOpacity(0.6),
-                    blurRadius: 16.0,
-                    spreadRadius: 1.0,
-                    offset: const Offset(
-                      -4.0,
-                      -4.0,
-                    ),
+        ShimmerButton(
+          onPressed: () {
+            context.read<OperationChangeBloc>().add(
+                  ChangeOperationEvent(
+                    date: DateTime.now(),
+                    type: '',
+                    form: '',
+                    sum: 0,
+                    note: '',
                   ),
-                ],
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    _colorAnimation.value!,
-                    _colorAnimation.value!.withOpacity(0.6),
-                  ],
-                ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16.0),
-                  topRight: Radius.circular(16.0),
-                ),
-              ),
-              height: 48.0,
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            child: Text(
-              LocaleKeys.operationAdd.tr(),
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
-              ),
-            ),
-          ),
-        ],
-      ),
+                );
+            Navigator.of(context).pushNamed(RouteNames.addOperation);
+          },
+          text: LocaleKeys.operationAdd.tr(),
+        ),
+      ],
     );
   }
 }
@@ -148,17 +64,16 @@ class _ListOperationsWidget extends StatelessWidget {
             return InkWell(
               onTap: () {
                 context.read<OperationChangeBloc>().add(
-                  ChangeOperationEvent(
-                    index: index,
-                    date: dateTime,
-                    type: operation.type,
-                    form: operation.form,
-                    sum: operation.sum,
-                    note: operation.note,
-                  ),
-                );
-                Navigator.of(context)
-                    .pushNamed(RouteNames.editOperation);
+                      ChangeOperationEvent(
+                        index: index,
+                        date: dateTime,
+                        type: operation.type,
+                        form: operation.form,
+                        sum: operation.sum,
+                        note: operation.note,
+                      ),
+                    );
+                Navigator.of(context).pushNamed(RouteNames.editOperation);
               },
               child: Card(
                 child: Row(
@@ -176,8 +91,15 @@ class _ListOperationsWidget extends StatelessWidget {
                       flex: 2,
                       child: Column(
                         children: [
-                          Text(operation.type),
-                          Text(operation.form),
+                          Text(
+                            operation.form,
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            operation.note,
+                            style: TextStyle(fontSize: 10),
+                          ),
                         ],
                       ),
                     ),
@@ -224,6 +146,9 @@ class _ListOperationsWidget extends StatelessWidget {
                     ),
                   ],
                 ),
+                color: operation.type == "Расход"
+                    ? Colors.red.shade100
+                    : Colors.green.shade100,
               ),
             );
           },

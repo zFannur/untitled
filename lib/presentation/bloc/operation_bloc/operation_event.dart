@@ -9,6 +9,11 @@ class GetOperationEvent extends OperationEvent {
   List<Object?> get props => [];
 }
 
+class GetSheetOperationEvent extends OperationEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 class CheckInternetEvent extends OperationEvent {
   @override
   List<Object?> get props => [];

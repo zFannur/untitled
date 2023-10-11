@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:untitled/presentation/bloc/plan_bloc/plan_bloc.dart';
+import 'package:untitled/presentation/widget/shimmer_button.dart';
 import '../../../../resource/langs/locale_keys.g.dart';
 import '../../../widget/dropdown_button_widget.dart';
 
@@ -21,8 +22,11 @@ class PlanScreen extends StatelessWidget {
           const _PlanListWidget(),
         const SizedBox(),
         const Text('В РАЗРАБОТКЕ',
-            style: TextStyle(
-                fontSize: 25, color: Colors.red)),
+            style: TextStyle(fontSize: 25, color: Colors.red)),
+        ShimmerButton(
+          onPressed: () {},
+          text: "Add Plan",
+        ),
       ],
     );
   }
